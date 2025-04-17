@@ -1,0 +1,19 @@
+module "deployment" {
+  source = "../deployment"
+  lb = module.ecs_infra.lb
+  lb_blue_target_group = module.ecs_infra.lb_blue_target_group
+  lb_green_target_group = module.ecs_infra.lb_green_target_group
+  lb_listener = module.ecs_infra.lb_listener
+  lb_security_group = module.ecs_infra.lb_security_group
+  app = var.app
+  environment = var.environment
+  env_vars = local.env_vars
+  ecs_cluster = module.ecs_infra.ecs_cluster
+  kms = local.kms
+  config = local.config
+  secrets = local.secrets
+  vpc = local.vpc
+  healthcheck = var.healthcheck
+  aws_cloudwatch_log_group = module.ecs_infra.aws_cloudwatch_log_group
+  image_tag = var.image_tag
+}

@@ -1,0 +1,23 @@
+output "primary_zone" {
+  value = aws_route53_zone.primary
+}
+
+output "dev_vpc" {
+  value = {
+    id = module.dev_vpc[0].id
+    cidr_block = module.dev_vpc[0].cidr_block
+    subnet_ids = module.dev_vpc[0].subnet_ids
+  }
+}
+
+output "dev_caches" {
+  value = length(module.dev_caches) > 0 ? module.dev_caches : null
+}
+
+output "dev_databases" {
+  value = length(module.dev_postgres) > 0 ? module.dev_postgres : null
+}
+
+output "dev_kms" {
+  value = module.dev_kms[0].kms
+}
