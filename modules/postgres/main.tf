@@ -68,7 +68,8 @@ resource "aws_ssm_parameter" "rds_connection" {
   key_id = aws_kms_key.encryption_rds.id
   value = jsonencode({
     rds_endpoint = split(":", aws_db_instance.rds[each.key].endpoint)[0],
-    rds_port     = split(":", aws_db_instance.rds[each.key].endpoint)[1]
+    rds_port     = split(":", aws_db_instance.rds[each.key].endpoint)[1],
+    secret_arn   = aws_db_instance.rds[each.key].master_user_secret[0].secret_arn
   })
 }
 
