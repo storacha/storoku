@@ -11,11 +11,11 @@ output "dev_vpc" {
 }
 
 output "dev_caches" {
-  value = length(module.dev_caches) > 0 ? module.dev_caches : null
+  value = length(module.dev_caches) > 0 ? module.dev_caches[0] : null
 }
 
 output "dev_databases" {
-  value = length(module.dev_postgres) > 0 ? module.dev_postgres : null
+  value = length(module.dev_postgres) > 0 ? module.dev_postgres[0] : null
 }
 
 output "dev_kms" {

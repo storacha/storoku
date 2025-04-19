@@ -10,17 +10,22 @@ locals {
     cidr_block = data.terraform_remote_state.shared.outputs.dev_vpc.cidr_block
     subnet_ids = data.terraform_remote_state.shared.outputs.dev_vpc.subnet_ids
   }
-  caches = local.dedicated_resources ? module.caches : data.terraform_remote_state.shared.outputs.dev_caches
-  databases = local.dedicated_resources ? module.databases : data.terraform_remote_state.shared.outputs.dev_databases
+  caches = local.dedicated_resources ? module.caches.caches : data.terraform_remote_state.shared.outputs.dev_caches != null ? data.terraform_remote_state.shared.outputs.dev_caches.caches : {}
+  databases = local.dedicated_resources ? module.databases.db : data.terraform_remote_state.shared.outputs.dev_databases != null ? data.terraform_remote_state.shared.outputs.dev_databases.db : {}
   domain = {
     name = var.environment == "prod" ? "${var.app}.storacha.network" : "${var.environment}.${var.app}.storacha.network"
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
   }
   env_vars = concat(var.deployment_env_vars,
     [for key, cache in local.caches : {
-      name = "${key}_CACHE_ID"
+      name = "${upper(key)}_CACHE_ID"
       value = cache.id
-    }])
+    }],
+    [for key, cache in local.caches : {
+      name = "${upper(key)}_CACHE_URL"
+      value = "${cache.address}:${cache.port}"
+    }],
+    )
   secrets = concat(var.secrets, [{
     name = "private_key"
     valueFrom = aws_secretsmanager_secret.ecs_secret.arn
