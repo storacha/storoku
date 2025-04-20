@@ -10,8 +10,8 @@ locals {
     cidr_block = data.terraform_remote_state.shared.outputs.dev_vpc.cidr_block
     subnet_ids = data.terraform_remote_state.shared.outputs.dev_vpc.subnet_ids
   }
-  caches = local.dedicated_resources ? module.caches.caches : data.terraform_remote_state.shared.outputs.dev_caches != null ? data.terraform_remote_state.shared.outputs.dev_caches.caches : {}
-  databases = local.dedicated_resources ? module.databases.db : data.terraform_remote_state.shared.outputs.dev_databases != null ? data.terraform_remote_state.shared.outputs.dev_databases.db : {}
+  caches = local.dedicated_resources ? module.caches[0].caches : data.terraform_remote_state.shared.outputs.dev_caches != null ? data.terraform_remote_state.shared.outputs.dev_caches.caches : {}
+  databases = local.dedicated_resources ? module.databases[0].connection : data.terraform_remote_state.shared.outputs.dev_databases != null ? data.terraform_remote_state.shared.outputs.dev_databases.connection : {}
   domain = {
     name = var.environment == "prod" ? "${var.app}.storacha.network" : "${var.environment}.${var.app}.storacha.network"
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
