@@ -14,6 +14,7 @@ module "databases" {
   db_config = {
     allocated_storage = terraform.workspace == "prod" ? 100 : 10
     multi_az = terraform.workspace == "prod"
+    proxy = terraform.workspace == "prod"
     instance_class = terraform.workspace == "prod" ? "db.t4g.large" : "db.t4g.micro"
     performance_insights_retention_period = terraform.workspace == "prod" ? 31 : 7
   }

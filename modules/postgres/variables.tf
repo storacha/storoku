@@ -14,6 +14,7 @@ variable "db_config" {
     allocated_storage = number
     instance_class = string
     multi_az = bool
+    proxy = bool
     performance_insights_retention_period = number
   })
 }
