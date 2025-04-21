@@ -26,6 +26,15 @@ resource "aws_security_group" "rds" {
     cidr_blocks = [var.vpc.cidr_block]
   }
   
+  // ingress bastion host
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    description = "Bastion"
+    cidr_blocks = ["${aws_instance.database_bastion_host.private_ip}/32"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -287,7 +296,7 @@ resource "aws_db_instance" "rds" {
   apply_immediately                     = true
 }
 
-
+// DB Proxy (if needed)
 
 # Setup a policy + role that allows the proxy to get RDS perms & also to
 # read the secrets
@@ -395,4 +404,53 @@ resource "aws_db_proxy" "db_proxy" {
     iam_auth    = "REQUIRED"
     secret_arn  = aws_db_instance.rds[each.key].master_user_secret.arn
   }
+}
+
+// Bastion Host for console access
+resource "aws_security_group" "bastion_host" {
+  name        = "${var.environment}-${var.app}-bastion-host-sg"
+  description = "allow ssh from public places for database access"
+  vpc_id      = var.vpc.id
+
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.environment}-${var.app} allow ssh to bastion host"
+  }
+}
+
+resource "aws_instance" "database_bastion_host" {
+  ami           = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
+  instance_type          = "t4g.micro"
+  key_name               = "${var.environment}-${var.app}-bastion-host-key-pair"
+  subnet_id              = var.vpc.subnet_ids.public[0]
+  vpc_security_group_ids = [aws_security_group.bastion_host.id]
+  tags = {
+    Name = "${var.environment}-${var.app}-database-bastion-host"
+  }
+}
+
+resource "aws_eip" "bastion-host-eip" {
+  instance = aws_instance.database_bastion_host.id
+  tags = {
+    Name = "${var.environment}-${var.app}-bastion-host-eip"
+  }
+}
+
+resource "aws_key_pair" "bastion-host-key-pair" {
+  key_name   = "${var.environment}-${var.app}-bastion-host-key-pair"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHqrbMBTBIWSq2MVbCis0cFZ//fLuZzoB9TIBzloqpU7 admin@storacha.network"
 }
