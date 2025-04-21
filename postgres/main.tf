@@ -73,46 +73,6 @@ locals {
   rds_port = var.db_config.proxy ? split(":", aws_db_proxy.db_proxy[0].endpoint)[1] : split(":", aws_db_instance.rds.endpoint)[1]
 }
 
-// SSM Parameter to read connection information to postgres
-
-resource "aws_ssm_parameter" "rds_connection" {
-  name   = "/${var.environment}/${var.app}/rds-connection"
-  type   = "SecureString"
-  key_id = aws_kms_key.encryption_rds.id
-  value =  jsonencode({
-    rds_endpoint = local.rds_endpoint
-    rds_port     = local.rds_port
-  })
-}
-
-resource "aws_iam_policy" "ssm_parameter_policy" {
-  name        = "${var.environment}-${var.app}-rds-connection-read-policy"
-  path        = "/"
-  description = "Policy to read the RDS Endpoint and Password ARN stored in the SSM Parameter Store."
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "ssm:GetParameters",
-          "ssm:GetParameter"
-        ],
-        Resource = [ aws_ssm_parameter.rds_connection.arn ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "kms:Decrypt"
-        ],
-        Resource = [ aws_kms_key.encryption_rds.arn ]
-      }
-    ]
-  })
-}
-
 // Parameter group for the DB
 
 resource "aws_db_parameter_group" "postgres" {

@@ -109,3 +109,69 @@ variable "healthcheck" {
   type = bool
   default = false
 }
+
+variable "caches" {
+  type = map(object({
+    id      = string
+    arn     = string
+    address = string
+    port    = number
+  }))
+}
+
+variable "buckets" {
+  type = map(object({
+    arn = string
+    bucket = string
+  }))
+}
+
+variable "tables" {
+  type = map( object({
+    id = string
+    arn = string
+  }))
+}
+
+
+variable "topics" {
+  type = map(object({
+    id = string
+    arn = string
+  }))
+}
+
+variable "queues" {
+  type = map(object({
+    id = string
+    arn = string
+  }))
+}
+
+variable "create_db" {
+  type = bool
+  default = false
+}
+
+variable "database" {
+  type = object({
+    id = string
+    arn = string
+    address = string
+    port = string
+  })
+  default = {
+    id = ""
+    arn = ""
+    address = ""
+    port = ""
+  }
+}
+
+variable "db_config" {
+  description = "db config"
+  type = object({
+    username = string
+    database = string
+  }) 
+}

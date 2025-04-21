@@ -3,8 +3,7 @@ locals {
   kms = local.dedicated_resources ? module.kms[0].kms : data.terraform_remote_state.shared.outputs.dev_kms
   vpc = local.dedicated_resources ? module.vpc[0].id : data.terraform_remote_state.shared.outputs.dev_vpc
   caches = local.dedicated_resources ? module.caches[0].caches : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
-  databases = local.dedicated_resources ? module.databases[0].databases : try(data.terraform_remote_state.shared.outputs.dev_databases.databases, {})
-  dbparams = local.dedicated_resources ? module.databases[0].ssm_params : try(data.terraform_remote_state.shared.outputs.dev_databases.ssm_params, {})
+  database = local.dedicated_resources ? module.databases[0].database : try(data.terraform_remote_state.shared.outputs.dev_databases.database, {})
   domain = {
     name = var.environment == "prod" ? "${var.app}.storacha.network" : "${var.environment}.${var.app}.storacha.network"
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id

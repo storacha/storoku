@@ -1,4 +1,4 @@
-module "bucket" {
+module "buckets" {
   for_each = { for bucket in var.buckets : bucket.name => bucket }
   source = "../s3"
   app = var.app

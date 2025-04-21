@@ -16,4 +16,12 @@ module "deployment" {
   healthcheck = var.healthcheck
   aws_cloudwatch_log_group = module.ecs_infra.aws_cloudwatch_log_group
   image_tag = var.image_tag
+  create_db = var.create_db
+  database = local.database
+  db_config = var.db_config
+  caches = local.caches
+  queues = module.queues
+  tables = module.tables
+  topics = module.topics
+  buckets = module.buckets
 }

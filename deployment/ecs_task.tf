@@ -44,7 +44,54 @@ resource "aws_ecs_task_definition" "app" {
         timeout     = 5
         startPeriod = 10
       } : null
-      environments = var.env_vars
+      environments = concat(var.env_vars,
+        [for key, cache in var.caches : {
+          name = "${upper(key)}_CACHE_ID"
+          value = cache.id
+        }],
+        [for key, cache in var.caches : {
+          name = "${upper(key)}_CACHE_URL"
+          value = "${cache.address}:${cache.port}"
+        }],
+        var.create_db ? [
+          {
+            name = "PGHOST"
+            value = var.database.address
+          },
+          {
+            name = "PGPORT"
+            value = var.database.port
+          },
+          {
+            name = "PGDATABASE"
+            value = var.db_config.database
+          },
+          {
+            name = "PGUSERNAME"
+            value = var.db_config.username
+          },
+          {
+            name = "PG_RDS_IAM_AUTH"
+            value = "true"
+          }
+        ] : [],
+        [ for key, bucket in var.buckets : {
+          name = "${upper(key)}_BUCKET_NAME"
+          value = bucket.bucket
+        }],
+        [ for key, queue in var.queues : {
+          name = "${upper(key)}_QUEUE_ID"
+          value = queue.id
+        }],
+        [ for key, table in var.tables : {
+          name = "${upper(key)}_TABLE_ID"
+          value = table.id
+        }],
+        [ for key, topic in var.topics : {
+          name = "${upper(key)}_TOPIC_ID"
+          value = topic.id
+        }]
+      )
       secrets = var.secrets
     }
   ])
@@ -134,4 +181,186 @@ resource "aws_iam_role_policy_attachment" "attach_secrets_read_task_role" {
 resource "aws_iam_role_policy_attachment" "attach_secrets_read_task_execution_role" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.secrets_manager_read_policy.arn
+}
+
+data "aws_iam_policy_document" "task_elasticache_connect_document" {
+  count = length(var.caches) > 0 ? 1 : 0
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "elasticache:Connect"
+    ]
+
+    resources = [for cache in var.caches : cache.arn]
+  }
+}
+
+resource "aws_iam_policy" "task_elasticache_connect" {
+  count = length(var.caches) > 0 ? 1 : 0
+
+  name   = "${terraform.workspace}-${var.app}-task-elasticache-connect"
+  policy = data.aws_iam_policy_document.task_elasticache_connect_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_elasticache_connect" {
+  count = length(var.caches) > 0 ? 1 : 0
+
+  policy_arn = aws_iam_policy.task_elasticache_connect[0].arn
+  role       = aws_iam_role.ecs_task_role.name
+}
+
+
+data "aws_iam_policy_document" "task_dynamodb_put_get_document" {
+  count = length(var.tables) > 0 ? 1 : 0
+
+  statement {
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+    ]
+    resources = [for k, table in var.tables : table.arn]
+  }
+}
+
+resource "aws_iam_policy" "task_dynamodb_put_get" {
+  count = length(var.tables) > 0 ? 1 : 0
+
+  name        = "${terraform.workspace}-${var.app}-task-dynamodb-put-get"
+  description = "This policy will be used by the task to put and get data from DynamoDB"
+  policy      = data.aws_iam_policy_document.task_dynamodb_put_get_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_dynamodb_put_get" {
+  count = length(var.tables) > 0 ? 1 : 0
+
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.task_dynamodb_put_get[0].arn
+}
+
+
+data "aws_iam_policy_document" "task_s3_put_get_document" {
+  count = length(var.buckets) > 0 ? 1 : 0
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [ for k, bucket in var.buckets: "${bucket.arn}/*" ]
+  }
+  statement {
+    actions = [
+      "s3:ListBucket","s3:GetBucketLocation"
+    ]
+    resources = [ for k, bucket in var.buckets: bucket.arn ]
+  }
+}
+
+resource "aws_iam_policy" "task_s3_put_get" {
+  count = length(var.buckets) > 0 ? 1 : 0
+
+  name        = "${terraform.workspace}-${var.app}-task-s3-put-get"
+  description = "This policy will be used by the task to put and get objects from S3"
+  policy      = data.aws_iam_policy_document.task_s3_put_get_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_s3_put_get" {
+  count = length(var.buckets) > 0 ? 1 : 0
+
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.task_s3_put_get[0].arn
+}
+
+data "aws_arn" "rds_arn" {
+  count = var.create_db ? 1 : 0
+  arn = var.database.arn
+}
+
+data "aws_iam_policy_document" "task_rds_connect_document" {
+  count = var.create_db ? 1 : 0
+  statement {
+    effect = "Allow"
+    actions = [
+      "rds-db:connect"
+    ]
+
+    resources = [
+      "arn:aws:rds-db:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:dbuser:${split(":", data.aws_arn.rds_arn[0].resource)[1]}/${var.db_config.username}"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "task_rds_connect" {
+  count = var.create_db ? 1 : 0
+
+  name   = "${var.environment}-${var.app}-task-rds-connect"
+  policy = data.aws_iam_policy_document.task_rds_connect_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_rds_connect_attach" {
+  count = var.create_db ? 1 : 0
+  policy_arn = aws_iam_policy.task_rds_connect[0].arn
+  role       = aws_iam_role.ecs_task_role.name
+}
+
+data "aws_iam_policy_document" "task_sns_document" {
+  count = length(var.topics) > 0 ? 1 : 0
+
+  statement {
+    actions = [
+      "sns:Publish"
+    ]
+    resources = [
+      for k, topic in var.topics : topic.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "task_sns" {
+  count = length(var.topics) > 0 ? 1 : 0
+
+  name        = "${terraform.workspace}-${var.app}-task-sns"
+  description = "This policy will be used by the task to push to sns"
+  policy      = data.aws_iam_policy_document.task_sns_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_sns" {
+  count = length(var.topics) > 0 ? 1 : 0
+
+  role       = aws_iam_role.ecs_task_role.arn
+  policy_arn = aws_iam_policy.task_sns[0].arn
+}
+
+data "aws_iam_policy_document" "task_sqs_document" {
+  count = length(var.queues) > 0 ? 1 : 0
+  statement {
+  
+    effect = "Allow"
+  
+    actions = [
+      "sqs:SendMessage*",
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
+    ]
+
+    resources = [for k, queue in var.queues : queue.arn]
+  }
+}
+
+resource "aws_iam_policy" "task_sqs" {
+  count = length(var.queues) > 0 ? 1 : 0
+
+  name        = "${terraform.workspace}-${var.app}-task-sqs"
+  description = "This policy will be used by the task to send messages to an SQS queue"
+  policy      = data.aws_iam_policy_document.task_sqs_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_sqs" {
+  count = length(var.queues) > 0 ? 1 : 0
+
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.task_sqs[0].arn
 }
