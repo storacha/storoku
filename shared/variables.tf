@@ -25,3 +25,8 @@ variable "caches" {
   type = set(string)
   default = []
 }
+
+variable "zone_id" {
+  description = "cloudflare zone id for NS records"
+  type = string
+}

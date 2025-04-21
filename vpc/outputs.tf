@@ -18,7 +18,6 @@ output "elasticache_cidr_blocks" {
   value = aws_subnet.vpc_elasticache_subnet[*].cidr_block
 }
 
-
 output "subnet_ids" {
   value = {
       private = aws_subnet.vpc_private_subnet[*].id
