@@ -104,7 +104,7 @@ resource "aws_security_group" "cache_security_group" {
   vpc_id      = var.vpc.id
   
   ingress {
-    cidr_blocks = [var.vpc.cidr_block]
+    cidr_blocks = flatten([var.vpc.private_cidr_blocks, var.vpc.elasticache_cidr_blocks])
     description = "valkey cluster"
     from_port = 6379
     to_port = 6379

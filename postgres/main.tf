@@ -23,7 +23,7 @@ resource "aws_security_group" "rds" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = [var.vpc.cidr_block]
+    cidr_blocks = flatten([var.vpc.private_cidr_blocks, var.vpc.db_cidr_blocks])
   }
   
   // ingress bastion host
@@ -68,22 +68,21 @@ resource "aws_iam_role_policy_attachment" "managed_rds_monitoring_policy_attache
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
 }
 
+locals {
+  rds_endpoint = var.db_config.proxy ? split(":", aws_db_proxy.db_proxy[0].endpoint)[0] : split(":", aws_db_instance.rds.endpoint)[0]
+  rds_port = var.db_config.proxy ? split(":", aws_db_proxy.db_proxy[0].endpoint)[1] : split(":", aws_db_instance.rds.endpoint)[1]
+}
+
 // SSM Parameter to read connection information to postgres
 
 resource "aws_ssm_parameter" "rds_connection" {
-  for_each = var.instances
-  name   = "/${var.environment}/${var.app}/${each.key}/rds-connection"
+  name   = "/${var.environment}/${var.app}/rds-connection"
   type   = "SecureString"
   key_id = aws_kms_key.encryption_rds.id
-  value = var.db_config.proxy ? jsonencode({
-    rds_endpoint = split(":", aws_db_proxy.db_proxy[each.key].endpoint)[0],
-    rds_port     = split(":", aws_db_proxy.db_proxy[each.key].endpoint)[1],
-    rds_user     = aws_db_instance.rds[each.key].username
-   }) : jsonencode({
-    rds_endpoint = split(":", aws_db_instance.rds[each.key].endpoint)[0],
-    rds_port     = split(":", aws_db_instance.rds[each.key].endpoint)[1],
-    rds_user     = aws_db_instance.rds[each.key].username
-   })
+  value =  jsonencode({
+    rds_endpoint = local.rds_endpoint
+    rds_port     = local.rds_port
+  })
 }
 
 resource "aws_iam_policy" "ssm_parameter_policy" {
@@ -101,7 +100,7 @@ resource "aws_iam_policy" "ssm_parameter_policy" {
           "ssm:GetParameters",
           "ssm:GetParameter"
         ],
-        Resource = [ for instance in var.instances : aws_ssm_parameter.rds_connection[instance].arn ]
+        Resource = [ aws_ssm_parameter.rds_connection.arn ]
       },
       {
         Effect = "Allow",
@@ -136,9 +135,8 @@ resource "aws_db_parameter_group" "postgres" {
 // rotation schedule for the password
 
 resource "aws_secretsmanager_secret_rotation" "rds" {
-  for_each = var.instances
 
-  secret_id          = aws_db_instance.rds[each.key].master_user_secret[0].secret_arn
+  secret_id          = aws_db_instance.rds.master_user_secret[0].secret_arn
   rotate_immediately = false
 
   rotation_rules {
@@ -259,14 +257,13 @@ resource "aws_kms_key_policy" "encryption_rds" {
 // DB instance
 
 resource "aws_db_instance" "rds" {
-  for_each = var.instances
   
   allocated_storage                   = var.db_config.allocated_storage
   storage_type                        = "gp3"
   engine                              = "postgres"
   engine_version                      = "16.3"
   instance_class                      = var.db_config.instance_class
-  identifier                          = "${var.environment}-${var.app}-rds-instance-${each.key}"
+  identifier                          = "${var.environment}-${var.app}-rds-instance"
   username                            = "postgres"
   skip_final_snapshot                 = true # Change to false if you want a final snapshot
   db_subnet_group_name                = aws_db_subnet_group.rds.id
@@ -315,7 +312,7 @@ data "aws_iam_policy_document" "rds_assume_role" {
 }
 
 data "aws_iam_policy_document" "rds_proxy_policy_document" {
-  for_each = local.proxies
+  count = var.db_config.proxy ? 1 : 0
   statement {
     sid = "AllowProxyToGetDbCredsFromSecretsManager"
     effect = "Allow"
@@ -324,7 +321,7 @@ data "aws_iam_policy_document" "rds_proxy_policy_document" {
     ]
 
     resources = [
-      aws_db_instance.rds[each.key].master_user_secret.arn
+      aws_db_instance.rds.master_user_secret[0].secret_arn
     ]
   }
 
@@ -348,30 +345,26 @@ data "aws_iam_policy_document" "rds_proxy_policy_document" {
 }
 
 resource "aws_iam_policy" "rds_proxy_iam_policy" {
-  for_each = local.proxies
+  count = var.db_config.proxy ? 1 : 0
   name   = "${var.environment}-${var.app}-rds-proxy-policy"
-  policy = data.aws_iam_policy_document.rds_proxy_policy_document[each.key].json
+  policy = data.aws_iam_policy_document.rds_proxy_policy_document[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "rds_proxy_iam_attach" {
-  for_each = local.proxies
-  policy_arn = aws_iam_policy.rds_proxy_iam_policy[each.key].arn
-  role       = aws_iam_role.rds_proxy_iam_role[each.key].name
+  count = var.db_config.proxy ? 1 : 0
+  policy_arn = aws_iam_policy.rds_proxy_iam_policy[0].arn
+  role       = aws_iam_role.rds_proxy_iam_role[0].name
 }
 
 resource "aws_iam_role" "rds_proxy_iam_role" {
-  for_each = local.proxies
-  name               = "${var.environment}-${var.app}}-rds-proxy-role"
+  count = var.db_config.proxy ? 1 : 0
+  name               = "${var.environment}-${var.app}-rds-proxy-role"
   assume_role_policy = data.aws_iam_policy_document.rds_assume_role[0].json
 }
 
-locals {
-  proxies = var.db_config.proxy ? var.instances : []
-}
-
 resource "aws_db_proxy_default_target_group" "rds_proxy_target_group" {
-  for_each = local.proxies
-  db_proxy_name = aws_db_proxy.db_proxy[each.key].name
+  count = var.db_config.proxy ? 1 : 0
+  db_proxy_name = aws_db_proxy.db_proxy[0].name
 
   connection_pool_config {
     connection_borrow_timeout = 120
@@ -381,28 +374,28 @@ resource "aws_db_proxy_default_target_group" "rds_proxy_target_group" {
 }
 
 resource "aws_db_proxy_target" "rds_proxy_target" {
-  for_each = local.proxies
+  count = var.db_config.proxy ? 1 : 0
 
-  db_instance_identifier = aws_db_instance.rds[each.key].identifier
-  db_proxy_name          = aws_db_proxy.db_proxy[each.key].name
-  target_group_name      = aws_db_proxy_default_target_group.rds_proxy_target_group[each.key].name
+  db_instance_identifier = aws_db_instance.rds.identifier
+  db_proxy_name          = aws_db_proxy.db_proxy[0].name
+  target_group_name      = aws_db_proxy_default_target_group.rds_proxy_target_group[0].name
 }
 
 resource "aws_db_proxy" "db_proxy" {
-  for_each = local.proxies
+  count = var.db_config.proxy ? 1 : 0
   name = "${var.environment}-${var.app}-rds-proxy"
   debug_logging          = false
   engine_family          = "POSTGRESQL"
   idle_client_timeout    = 1800
   require_tls            = true
-  role_arn               = aws_iam_role.rds_proxy_iam_role[each.key].arn
+  role_arn               = aws_iam_role.rds_proxy_iam_role[0].arn
   vpc_security_group_ids = [aws_security_group.rds.id]
   vpc_subnet_ids = var.vpc.subnet_ids.db
 
   auth {
     auth_scheme = "SECRETS"
     iam_auth    = "REQUIRED"
-    secret_arn  = aws_db_instance.rds[each.key].master_user_secret.arn
+    secret_arn  = aws_db_instance.rds.master_user_secret[0].secret_arn
   }
 }
 
@@ -432,8 +425,12 @@ resource "aws_security_group" "bastion_host" {
   }
 }
 
+data "aws_ssm_parameter" "ami" {
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
+}
+
 resource "aws_instance" "database_bastion_host" {
-  ami           = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
+  ami           = data.aws_ssm_parameter.ami.value
   instance_type          = "t4g.micro"
   key_name               = "${var.environment}-${var.app}-bastion-host-key-pair"
   subnet_id              = var.vpc.subnet_ids.public[0]

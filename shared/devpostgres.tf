@@ -1,11 +1,10 @@
 locals {
   # Only prod and staging get their own caches. All other envs will share the dev caches
-  should_create_shared_postgres = length(var.databases) > 0 && terraform.workspace != "prod" && terraform.workspace != "staging"
+  should_create_shared_postgres = var.create_db && terraform.workspace != "prod" && terraform.workspace != "staging"
 }
 
 module "dev_postgres" {
   count = local.should_create_shared_postgres ? 1 : 0
-  instances = var.databases
 
   source = "../postgres"
 
@@ -13,6 +12,8 @@ module "dev_postgres" {
   environment = "dev"
 
   db_config = {
+    app_database = var.db_config.database
+    app_username = var.db_config.username
     allocated_storage = 20
     multi_az = false
     proxy = false

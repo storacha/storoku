@@ -11,6 +11,8 @@ variable "environment" {
 variable "db_config" {
   description = "parameters for the db instance"
   type        = object({
+    app_username = string
+    app_database = string
     allocated_storage = number
     instance_class = string
     multi_az = bool
@@ -19,16 +21,13 @@ variable "db_config" {
   })
 }
 
-variable "instances" {
-  description = "postgres instances to create"
-  type= set(string)
-}
-
 variable "vpc" {
   description = "The VPC to deploy the db in"
   type        = object({
     id                 = string
     cidr_block         = string
+    private_cidr_blocks = list(string)
+    db_cidr_blocks = list(string)
     subnet_ids = object({
       public      = list(string)
       private     = list(string)

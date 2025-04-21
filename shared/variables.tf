@@ -3,10 +3,21 @@ variable "app" {
   type        = string
 }
 
-variable "databases" {
-  description = "dbs to create"
-  type = set(string)
-  default = []
+variable "create_db" {
+  type = bool
+  default = false
+}
+
+variable "db_config" {
+  description = "db config"
+  type = object({
+    username = string
+    database = string
+  }) 
+  default = {
+    username = "default"
+    database = "default"
+  }
 }
 
 variable "caches" {

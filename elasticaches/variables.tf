@@ -18,6 +18,8 @@ variable "vpc" {
   type        = object({
     id                 = string
     cidr_block         = string
+    private_cidr_blocks = list(string)
+    elasticache_cidr_blocks = list(string)
     subnet_ids = object({
       public      = list(string)
       private     = list(string)
