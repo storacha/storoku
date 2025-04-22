@@ -7,7 +7,7 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = var.lb_blue_target_group.arn
     container_name   = "first"
-    container_port   = "8080" # Application Port
+    container_port   =  var.config.httpport # Application Port
   }
   launch_type = "FARGATE"
   network_configuration {
@@ -40,8 +40,8 @@ resource "aws_security_group" "container_sg" {
 
   ingress {
     security_groups = [var.lb_security_group.id]
-    from_port                = 8080
-    to_port                  = 8080
+    from_port                = var.config.httpport
+    to_port                  = var.config.httpport
     protocol                 = "tcp"
   }
 }

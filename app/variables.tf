@@ -24,15 +24,33 @@ variable "private_key" {
   type = string
 }
 
+variable "private_key_env_var" {
+  description = "env var set on the machine for the did private key"
+  type = string
+  default = "PRIVATE_KEY"
+}
+
 variable "did" {
   description = "DID for this deployment (did:web:... for example)"
   type = string
+}
+
+variable "did_env_var" {
+  description = "env var set on the machine for the did public key"
+  type = string
+  default = "DID"
 }
 
 variable "principal_mapping" {
   type        = string
   description = "JSON encoded mapping of did:web to did:key"
   default     = ""
+}
+
+variable "principal_mapping_env_var" {
+  description = "env var set on the machine for mapping did:web to did:key"
+  type = string
+  default = "PRINCIPAL_MAPPING"
 }
 
 variable "caches" {
@@ -112,11 +130,8 @@ variable "image_tag" {
 }
 
 variable "secrets" {
-  type = list(object({
-    name      = string
-    valueFrom = string
-  }))
-  default = []
+  type = map(string)
+  default = {}
 }
 
 variable "deployment_env_vars" {

@@ -10,4 +10,5 @@ resource "cloudflare_dns_record" "app" {
   name = "${var.app}.storacha.network"
   type = "NS"
   ttl = 1
+  depends_on = [ aws_route53_zone.primary ]
 }

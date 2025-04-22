@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "app" {
       portMappings = [
         {
           containerPort = var.config.httpport
-          hostPort      = 8080
+          hostPort      = var.config.httpport
           protocol      = "tcp"
           appProtocol   = "http"
         }
@@ -38,13 +38,13 @@ resource "aws_ecs_task_definition" "app" {
         }
       }
       healthCheck = var.healthcheck ? {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8080/healthcheck>> /proc/1/fd/1 2>&1 || exit 1"]
+        command     = ["CMD-SHELL", "curl -f http://localhost:${var.config.httpport}/healthcheck>> /proc/1/fd/1 2>&1 || exit 1"]
         interval    = 30
         retries     = 3
         timeout     = 5
         startPeriod = 10
       } : null
-      environments = concat(var.env_vars,
+      environment = concat(var.env_vars,
         [for key, cache in var.caches : {
           name = "${upper(key)}_CACHE_ID"
           value = cache.id
@@ -73,6 +73,10 @@ resource "aws_ecs_task_definition" "app" {
           {
             name = "PG_RDS_IAM_AUTH"
             value = "true"
+          },
+          {
+            name = "PGSSLMODE"
+            value = "require"
           }
         ] : [],
         [ for key, bucket in var.buckets : {

@@ -6,4 +6,5 @@ module "ecs_infra" {
   vpc = local.vpc
   cert_arn = module.cert.cert.arn
   kms = local.kms
+  httpport = var.httpport
 }

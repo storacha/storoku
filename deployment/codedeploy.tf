@@ -11,7 +11,7 @@ locals {
             TaskDefinition = aws_ecs_task_definition.app.arn
             LoadBalancerInfo = {
               ContainerName = "first"
-              ContainerPort = 8080
+              ContainerPort = var.config.httpport
             }
           }
         }

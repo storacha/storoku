@@ -41,3 +41,8 @@ variable "cert_arn" {
   description = "arn for cert to use with HTTPS listener"
   type = string
 }
+
+variable "httpport" {
+  type = number
+  default = 8080
+}

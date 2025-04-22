@@ -9,19 +9,15 @@ locals {
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
   }
   env_vars = concat(var.deployment_env_vars,
-    [for key, cache in local.caches : {
-      name = "${upper(key)}_CACHE_ID"
-      value = cache.id
+    [{
+      name = var.did_env_var
+      value = var.did
     }],
-    [for key, cache in local.caches : {
-      name = "${upper(key)}_CACHE_URL"
-      value = "${cache.address}:${cache.port}"
-    }],
-    )
-  secrets = concat(var.secrets, [{
-    name = "private_key"
-    valueFrom = aws_secretsmanager_secret.ecs_secret.arn
-  }])
+    [{
+      name = var.principal_mapping_env_var
+      value = var.principal_mapping
+    }])
+  secrets = [ for secret, arn in module.secrets.secrets : { name = secret, valueFrom = arn }]
   config = var.deployment_config != null ? var.deployment_config : var.environment == "prod" ? {
     cpu = 1024
     memory = 2048
