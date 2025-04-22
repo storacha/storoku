@@ -131,3 +131,8 @@ variable "healthcheck" {
   type = bool
   default = false
 }
+
+variable "httpport" {
+  type = number
+  default = 8080
+}

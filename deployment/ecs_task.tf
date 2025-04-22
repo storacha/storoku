@@ -23,7 +23,7 @@ resource "aws_ecs_task_definition" "app" {
       readonlyRootFilesystem = true
       portMappings = [
         {
-          containerPort = 8080
+          containerPort = var.config.httpport
           hostPort      = 8080
           protocol      = "tcp"
           appProtocol   = "http"

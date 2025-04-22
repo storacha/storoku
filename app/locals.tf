@@ -27,10 +27,12 @@ locals {
     memory = 2048
     service_min = 1
     service_max = 10
+    httpport = var.httpport
   } : {
     cpu = 256
     memory = 512
     service_min = 1
     service_max = 2
+    httpport = var.httpport
   }
 }
