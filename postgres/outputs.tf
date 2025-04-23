@@ -5,6 +5,7 @@ output "database" {
     access_policy_arn = aws_iam_policy.rds_access_iam_policy.arn
     secret_arn = aws_db_instance.rds.master_user_secret[0].secret_arn
     address = local.rds_endpoint
+    instance_address = split(":", aws_db_instance.rds.endpoint)[0]
     port = local.rds_port
   }
 }

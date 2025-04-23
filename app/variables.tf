@@ -148,7 +148,7 @@ variable "env_files" {
 }
 
 variable "domain_base" {
-  description = "base domain after the application"
+  description = "base domain of the application"
   type        = string
   default = ""
 }

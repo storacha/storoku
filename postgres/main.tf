@@ -69,8 +69,8 @@ resource "aws_iam_role_policy_attachment" "managed_rds_monitoring_policy_attache
 }
 
 locals {
-  rds_endpoint = var.db_config.proxy ? split(":", aws_db_proxy.db_proxy[0].endpoint)[0] : split(":", aws_db_instance.rds.endpoint)[0]
-  rds_port = var.db_config.proxy ? split(":", aws_db_proxy.db_proxy[0].endpoint)[1] : split(":", aws_db_instance.rds.endpoint)[1]
+  rds_endpoint = var.db_config.proxy ? aws_db_proxy.db_proxy[0].endpoint : split(":", aws_db_instance.rds.endpoint)[0]
+  rds_port = split(":", aws_db_instance.rds.endpoint)[1]
 }
 
 // Parameter group for the DB
