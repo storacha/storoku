@@ -8,17 +8,31 @@ module "databases" {
   source = "../postgres"
 
   app = var.app
-  environment = terraform.workspace
+  environment = var.environment
 
   db_config = {
-    app_database = var.db_config.database
-    app_username = var.db_config.username
-    allocated_storage = terraform.workspace == "prod" ? 100 : 10
-    multi_az = terraform.workspace == "prod"
-    proxy = terraform.workspace == "prod"
-    instance_class = terraform.workspace == "prod" ? "db.t4g.large" : "db.t4g.micro"
-    performance_insights_retention_period = terraform.workspace == "prod" ? 31 : 7
+    allocated_storage = var.environment == "prod" ? 100 : 10
+    multi_az = var.environment == "prod"
+    proxy = var.environment == "prod"
+    instance_class = var.environment == "prod" ? "db.t4g.large" : "db.t4g.micro"
+    performance_insights_retention_period = var.environment == "prod" ? 31 : 7
   }
 
+  vpc = local.vpc
+}
+
+module "postgres-provisioner" {
+  count = var.create_db ? 1 : 0
+  source = "../postgres-provisioner"
+  app = var.app
+  environment = var.environment
+  db_config = {
+    app_username = local.db_username
+    app_database = local.db_database
+    access_policy_arn = local.database.access_policy_arn
+    secret_arn = local.database.secret_arn
+    address = local.database.address
+    port = local.database.port
+  }
   vpc = local.vpc
 }

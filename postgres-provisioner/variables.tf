@@ -11,11 +11,12 @@ variable "environment" {
 variable "db_config" {
   description = "parameters for the db instance"
   type        = object({
-    allocated_storage = number
-    instance_class = string
-    multi_az = bool
-    proxy = bool
-    performance_insights_retention_period = number
+    app_username = string
+    app_database = string
+    access_policy_arn = string
+    secret_arn = string
+    address = string
+    port = string
   })
 }
 

@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "app" {
           },
           {
             name = "PGDATABASE"
-            value = var.db_config.database
+            value = "var.db_config.database"
           },
           {
             name = "PGUSERNAME"

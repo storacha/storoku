@@ -31,4 +31,6 @@ locals {
     service_max = 2
     httpport = var.httpport
   }
+  db_username = "${var.environment}-${var.app}"
+  db_database = "${var.environment}-${var.app}"
 }

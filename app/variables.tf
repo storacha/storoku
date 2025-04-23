@@ -64,18 +64,6 @@ variable "create_db" {
   default = false
 }
 
-variable "db_config" {
-  description = "db config"
-  type = object({
-    username = string
-    database = string
-  }) 
-  default = {
-    username = "default"
-    database = "default"
-  }
-}
-
 variable "buckets" {
   description = "s3 buckets to create"
   type = list(object({

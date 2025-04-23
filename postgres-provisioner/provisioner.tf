@@ -1,5 +1,5 @@
 locals {
-  secret_name_with_postfix = element(split(":", aws_db_instance.rds.master_user_secret[0].secret_arn), length(split(":", aws_db_instance.rds.master_user_secret[0].secret_arn)) - 1)
+  secret_name_with_postfix = element(split(":", var.db_config.secret_arn), length(split(":", var.db_config.secret_arn)) - 1)
   segments                 = split("-", local.secret_name_with_postfix)
   master_user_secret_name  = join("-", slice(local.segments, 0, length(local.segments) - 1))
 }
@@ -23,42 +23,18 @@ module "provisoner_lambda" {
 
   role_name = "${var.environment}-${var.app}-db-provisioner-execution-role"
 
-  attach_policy_statements = true
-  policy_statements = {
-    datebase = {
-      effect = "Allow"
-      actions = [
-        "rds:DescribeDBInstances",
-      ]
-      resources = ["*"]
-    }
-    kms = {
-      effect = "Allow"
-      actions = [
-        "kms:Decrypt",
-      ]
-      resources = [aws_kms_key.encryption_rds.arn]
-    }
-    secrets_manager = {
-      effect = "Allow"
-      actions = [
-        "secretsmanager:GetSecretValue",
-      ]
-      resources = [aws_db_instance.rds.master_user_secret[0].secret_arn]
-    }
-  }
-
   attach_policies    = true
-  number_of_policies = 2
+  number_of_policies = 3
 
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+    var.db_config.access_policy_arn
   ]
 
   environment_variables = {
-    RDS_HOST                      = local.rds_endpoint
-    RDS_PORT                      = local.rds_port
+    RDS_HOST                      = var.db_config.address
+    RDS_PORT                      = var.db_config.port
     DB_USERNAME                   = var.db_config.app_username
     DB_DATABASE                   = var.db_config.app_database
     CREATE_DATABASE               = true

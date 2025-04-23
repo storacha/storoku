@@ -12,8 +12,6 @@ module "dev_postgres" {
   environment = "dev"
 
   db_config = {
-    app_database = var.db_config.database
-    app_username = var.db_config.username
     allocated_storage = 20
     multi_az = false
     proxy = false

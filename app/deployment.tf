@@ -18,7 +18,10 @@ module "deployment" {
   image_tag = var.image_tag
   create_db = var.create_db
   database = local.database
-  db_config = var.db_config
+  db_config = {
+    username = local.db_username
+    database = local.db_database
+  }
   caches = local.caches
   queues = module.queues
   tables = module.tables

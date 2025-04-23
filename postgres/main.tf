@@ -412,3 +412,36 @@ resource "aws_key_pair" "bastion-host-key-pair" {
   key_name   = "${var.environment}-${var.app}-bastion-host-key-pair"
   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHqrbMBTBIWSq2MVbCis0cFZ//fLuZzoB9TIBzloqpU7 admin@storacha.network"
 }
+
+data "aws_iam_policy_document" "rds_access_policy_document" {
+  statement {
+    sid = "datebase" 
+    effect = "Allow"
+    actions = [
+      "rds:DescribeDBInstances",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "kms"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+    ]
+    resources = [aws_kms_key.encryption_rds.arn]
+  }
+  statement {
+    sid = "secretsmanager"
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+    resources = [aws_db_instance.rds.master_user_secret[0].secret_arn]
+  }
+}
+
+resource "aws_iam_policy" "rds_access_iam_policy" {
+  name   = "${var.environment}-${var.app}-rds-access-policy"
+  policy = data.aws_iam_policy_document.rds_access_policy_document.json
+}
