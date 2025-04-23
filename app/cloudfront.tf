@@ -21,4 +21,5 @@ module "cloudfront" {
     aws = aws
     aws.acm = aws.acm
   }
+  origin = module.ecs_infra.lb.dns_name
 }

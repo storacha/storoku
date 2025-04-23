@@ -5,3 +5,7 @@ variable "domain" {
     name = string
   })
 }
+variable "origin" {
+  description = "Location to direct traffic to origin"
+  type = string
+}

@@ -11,7 +11,7 @@ terraform {
 resource "aws_cloudfront_distribution" "cloudfront" {
 
   origin {
-    domain_name = var.domain.name
+    domain_name = var.origin
     origin_id   = "origin"
 
     custom_origin_config {
