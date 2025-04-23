@@ -146,3 +146,9 @@ variable "env_files" {
   type = list(string)
   default = []
 }
+
+variable "domain_base" {
+  description = "base domain after the application"
+  type        = string
+  default = ""
+}

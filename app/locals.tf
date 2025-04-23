@@ -5,8 +5,9 @@ locals {
   buckets = var.buckets 
   caches = local.dedicated_resources ? module.caches[0].caches : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
   database = local.dedicated_resources ? module.databases[0].database : try(data.terraform_remote_state.shared.outputs.dev_databases.database, {})
+  domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.storacha.network"
   domain = {
-    name = var.environment == "prod" ? "${var.app}.storacha.network" : "${var.environment}.${var.app}.storacha.network"
+    name = var.environment == "prod" ? local.domain_base : "${var.environment}.${local.domain_base}"
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
   }
   env_vars = concat(var.deployment_env_vars,

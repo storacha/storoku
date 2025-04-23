@@ -3,6 +3,18 @@ variable "app" {
   type        = string
 }
 
+variable "domain_base" {
+  description = "base domain after the application"
+  type        = string
+  default = ""
+}
+
+variable "setup_cloudflare" {
+  description = "setup DNS records on cloudflare"
+  type        = bool
+  default =  true
+}
+
 variable "create_db" {
   type = bool
   default = false
