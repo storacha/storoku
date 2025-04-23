@@ -106,6 +106,13 @@ variable "env_vars" {
   default = []
 }
 
+variable "env_files" {
+  type = object({
+    bucket_arn = string
+    object_arns = list(string)
+  })
+}
+
 variable "healthcheck" {
   type = bool
   default = false

@@ -27,4 +27,5 @@ module "deployment" {
   tables = module.tables
   topics = module.topics
   buckets = module.buckets
+  env_files = module.env_files
 }

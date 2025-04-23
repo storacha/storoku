@@ -123,6 +123,7 @@ variable "secrets" {
 }
 
 variable "deployment_env_vars" {
+  description = "list of environment variables to upload and use in the container definition (NO SENSITIVE DATA)"
   type = list(object({
     name      = string
     value     = string
@@ -138,4 +139,10 @@ variable "healthcheck" {
 variable "httpport" {
   type = number
   default = 8080
+}
+
+variable "env_files" {
+  description = "list of environment variable files to upload and use in the container definition (NO SENSITIVE DATA)"
+  type = list(string)
+  default = []
 }

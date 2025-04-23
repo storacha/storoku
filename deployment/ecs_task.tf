@@ -95,7 +95,8 @@ resource "aws_ecs_task_definition" "app" {
           name = "${upper(key)}_TOPIC_ID"
           value = topic.id
         }]
-      )
+      ),
+      environmentFiles = [ for object_arn in var.env_files.object_arns : { "value": object_arn, "type": "s3" }]
       secrets = var.secrets
     }
   ])
@@ -146,11 +147,47 @@ resource "aws_iam_role" "ecs_task_execution_role" {
     ]
   })
 }
-#Attach role to policy
+
 resource "aws_iam_role_policy_attachment" "custom" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+data "aws_iam_policy_document" "task_execution_s3_put_get_document" {
+  count = length(var.env_files.object_arns) > 0 ? 1 : 0
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [ var.env_files.bucket_arn ]
+  }
+  statement {
+    actions = [
+      "s3:ListBucket","s3:GetBucketLocation"
+    ]
+    resources = [ var.env_files.bucket_arn ]
+  }
+}
+
+
+resource "aws_iam_policy" "task_execution_s3_put_get" {
+  count = length(var.env_files.object_arns) > 0 ? 1 : 0
+
+  name        = "${terraform.workspace}-${var.app}-task-execution-s3-put-get"
+  description = "This policy will be used by the task executor to put and get objects from S3"
+  policy      = data.aws_iam_policy_document.task_execution_s3_put_get_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_s3_put_get" {
+  count = length(var.env_files.object_arns) > 0 ? 1 : 0
+
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.task_execution_s3_put_get[0].arn
+}
+
 
 resource "aws_iam_policy" "secrets_manager_read_policy" {
   name        = "${var.environment}-${var.app}-ecs-fargate-secrets-manager-access"
