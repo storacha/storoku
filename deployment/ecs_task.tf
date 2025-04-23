@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "app" {
           },
           {
             name = "PGDATABASE"
-            value = "var.db_config.database"
+            value = var.db_config.database
           },
           {
             name = "PGUSERNAME"
@@ -162,7 +162,7 @@ data "aws_iam_policy_document" "task_execution_s3_put_get_document" {
       "s3:PutObject",
       "s3:DeleteObject",
     ]
-    resources = [ var.env_files.bucket_arn ]
+    resources = [ "${var.env_files.bucket_arn}/*" ]
   }
   statement {
     actions = [
@@ -171,7 +171,6 @@ data "aws_iam_policy_document" "task_execution_s3_put_get_document" {
     resources = [ var.env_files.bucket_arn ]
   }
 }
-
 
 resource "aws_iam_policy" "task_execution_s3_put_get" {
   count = length(var.env_files.object_arns) > 0 ? 1 : 0

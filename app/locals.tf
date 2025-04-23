@@ -1,7 +1,8 @@
 locals {
   dedicated_resources = var.environment == "prod" || var.environment == "staging"
   kms = local.dedicated_resources ? module.kms[0].kms : data.terraform_remote_state.shared.outputs.dev_kms
-  vpc = local.dedicated_resources ? module.vpc[0].id : data.terraform_remote_state.shared.outputs.dev_vpc
+  vpc = local.dedicated_resources ? module.vpc[0] : data.terraform_remote_state.shared.outputs.dev_vpc
+  buckets = var.buckets 
   caches = local.dedicated_resources ? module.caches[0].caches : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
   database = local.dedicated_resources ? module.databases[0].database : try(data.terraform_remote_state.shared.outputs.dev_databases.database, {})
   domain = {
@@ -31,6 +32,6 @@ locals {
     service_max = 2
     httpport = var.httpport
   }
-  db_username = "${var.environment}-${var.app}"
-  db_database = "${var.environment}-${var.app}"
+  db_username = "${var.environment}_${var.app}"
+  db_database = "${var.environment}_${var.app}"
 }

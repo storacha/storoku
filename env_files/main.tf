@@ -1,6 +1,6 @@
 
 resource "aws_s3_bucket" "env_file_bucket" {
-  count = length(var.env_files) > 0 != "" ? 1 : 0
+  count = length(var.env_files) > 0 ? 1 : 0
   bucket = "${var.environment}-${var.app}-ecs-env-file-bucket"
 }
 

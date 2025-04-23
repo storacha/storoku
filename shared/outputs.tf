@@ -3,11 +3,7 @@ output "primary_zone" {
 }
 
 output "dev_vpc" {
-  value = {
-    id = module.dev_vpc[0].id
-    cidr_block = module.dev_vpc[0].cidr_block
-    subnet_ids = module.dev_vpc[0].subnet_ids
-  }
+  value = length(module.dev_vpc) > 0 ? module.dev_vpc[0] : null
 }
 
 output "dev_caches" {
