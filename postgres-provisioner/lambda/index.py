@@ -21,7 +21,7 @@ def lambda_handler(event, context):
 def get_secrets(secret_manager_name):
     session = boto3.session.Session()
     client = session.client(service_name='secretsmanager',
-                            region_name=os.getenv('AWS_REGION', 'ap-southeast-1'))
+                            region_name=os.getenv('AWS_REGION', 'us-west-2'))
 
     try:
         secret_response = client.get_secret_value(SecretId=secret_manager_name)
@@ -32,7 +32,13 @@ def get_secrets(secret_manager_name):
     return secret_json
 # end def
 
-
+def user_password():
+    user_secret_name = os.environ['DB_USER_SECRET_MANAGER_NAME']
+    if user_secret_name == "":
+        return ""
+    user_secret_json = json.loads(get_secrets(user_secret_name))
+    return user_secret_json['password']
+    
 def provision_db_and_user(master_secrets_json):
     rds_host = os.environ['RDS_HOST']
     rds_port = os.environ['RDS_PORT']
@@ -42,6 +48,8 @@ def provision_db_and_user(master_secrets_json):
 
     master_username = master_secrets_json['username']
     master_password = master_secrets_json['password']
+
+    password = user_password()
 
     try:
         # Create database
@@ -60,7 +68,10 @@ def provision_db_and_user(master_secrets_json):
         if username in usernames:
             print("User already exists - skipping creation of user")
         else:
-            sql = "CREATE USER {};".format(username)
+            sql = "CREATE USER {}".format(username)
+            if password != "":
+                sql += " WITH PASSWORD '{}'".format(password)
+            sql += ";"
             cursor.execute(sql)
 
         # Grant privileges
@@ -70,7 +81,8 @@ def provision_db_and_user(master_secrets_json):
         grant_sql += "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {};".format(username)
         grant_sql += "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO {};".format(username)
         grant_sql += "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO {};".format(username)
-        grant_sql += "GRANT rds_iam TO {};".format(username)
+        if password == "":
+            grant_sql += "GRANT rds_iam TO {};".format(username)
         cursor.execute(grant_sql)
 
         # Close communication with the database

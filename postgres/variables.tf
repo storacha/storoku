@@ -15,6 +15,7 @@ variable "db_config" {
     instance_class = string
     multi_az = bool
     proxy = bool
+    proxy_user = string
     performance_insights_retention_period = number
   })
 }

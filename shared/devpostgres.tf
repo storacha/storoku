@@ -15,6 +15,7 @@ module "dev_postgres" {
     allocated_storage = 20
     multi_az = false
     proxy = false
+    proxy_user = ""
     instance_class = "db.t4g.micro"
     performance_insights_retention_period = 7
   }

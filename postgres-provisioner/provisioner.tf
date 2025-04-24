@@ -2,6 +2,9 @@ locals {
   secret_name_with_postfix = element(split(":", var.db_config.secret_arn), length(split(":", var.db_config.secret_arn)) - 1)
   segments                 = split("-", local.secret_name_with_postfix)
   master_user_secret_name  = join("-", slice(local.segments, 0, length(local.segments) - 1))
+  user_secret_name_with_postfix = try(element(split(":", var.db_config.user_secret_arn), length(split(":", var.db_config.user_secret_arn)) - 1), "")
+  user_segments                 = local.user_secret_name_with_postfix != "" ? split("-", local.user_secret_name_with_postfix) : []
+  user_secret_name  = length(local.user_segments) > 0 ? join("-", slice(local.user_segments, 0, length(local.user_segments) - 1)) : ""
 }
 
 module "provisoner_lambda" {
@@ -39,6 +42,7 @@ module "provisoner_lambda" {
     DB_DATABASE                   = var.db_config.app_database
     CREATE_DATABASE               = true
     DB_MASTER_SECRET_MANAGER_NAME = local.master_user_secret_name
+    DB_USER_SECRET_MANAGER_NAME   = local.user_secret_name
   }
 
   layers = [

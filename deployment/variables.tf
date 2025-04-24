@@ -166,12 +166,14 @@ variable "database" {
     id = string
     arn = string
     address = string
+    instance_address = string
     port = string
   })
   default = {
     id = ""
     arn = ""
     address = ""
+    instance_address = ""
     port = ""
   }
 }

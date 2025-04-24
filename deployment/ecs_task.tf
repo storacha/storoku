@@ -313,6 +313,11 @@ resource "aws_iam_role_policy_attachment" "task_s3_put_get" {
   policy_arn = aws_iam_policy.task_s3_put_get[0].arn
 }
 
+data "aws_arn" "rds_arn" {
+  count = var.create_db ? 1 : 0
+  arn = var.database.arn
+}
+
 data "aws_iam_policy_document" "task_rds_connect_document" {
   count = var.create_db ? 1 : 0
   statement {
@@ -322,7 +327,7 @@ data "aws_iam_policy_document" "task_rds_connect_document" {
     ]
 
     resources = [
-      "arn:aws:rds-db:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:dbuser:${var.database.id}/${var.db_config.username}"
+      "arn:aws:rds-db:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:dbuser:${var.database.address == var.database.instance_address ? var.database.id : split(":", data.aws_arn.rds_arn[0].resource)[1]}/${var.db_config.username}"
     ]
   }
 }

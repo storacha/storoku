@@ -272,6 +272,31 @@ data "aws_iam_policy_document" "rds_assume_role" {
   }
 }
 
+
+resource "random_password" "proxy_user_password" {
+  count = var.db_config.proxy ? 1 : 0
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "aws_secretsmanager_secret" "proxy_user_secret" {
+  count = var.db_config.proxy ? 1 : 0
+  #checkov:skip=CKV2_AWS_57: This variable does not need to be rotated
+  name                    = "/${var.app}/${var.environment}/Secret/rds-${var.db_config.proxy_user}/value"
+  recovery_window_in_days = 0
+  kms_key_id              = aws_kms_key.encryption_rds.id
+}
+
+resource "aws_secretsmanager_secret_version" "proxy_user_secret_version" {
+  count = var.db_config.proxy ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.proxy_user_secret[0].id
+  secret_string = jsonencode({
+    username: var.db_config.proxy_user
+    password: random_password.proxy_user_password[0].result
+  })
+}
+
 data "aws_iam_policy_document" "rds_proxy_policy_document" {
   count = var.db_config.proxy ? 1 : 0
   statement {
@@ -282,7 +307,8 @@ data "aws_iam_policy_document" "rds_proxy_policy_document" {
     ]
 
     resources = [
-      aws_db_instance.rds.master_user_secret[0].secret_arn
+      aws_db_instance.rds.master_user_secret[0].secret_arn,
+      aws_secretsmanager_secret.proxy_user_secret[0].arn
     ]
   }
 
@@ -357,6 +383,11 @@ resource "aws_db_proxy" "db_proxy" {
     auth_scheme = "SECRETS"
     iam_auth    = "REQUIRED"
     secret_arn  = aws_db_instance.rds.master_user_secret[0].secret_arn
+  }
+  auth {
+    auth_scheme = "SECRETS"
+    iam_auth    = "REQUIRED"
+    secret_arn  = aws_secretsmanager_secret.proxy_user_secret[0].arn
   }
 }
 
@@ -437,7 +468,8 @@ data "aws_iam_policy_document" "rds_access_policy_document" {
     actions = [
       "secretsmanager:GetSecretValue",
     ]
-    resources = [aws_db_instance.rds.master_user_secret[0].secret_arn]
+    resources = concat([aws_db_instance.rds.master_user_secret[0].secret_arn],
+      var.db_config.proxy ? [aws_secretsmanager_secret.proxy_user_secret[0].arn] : [])
   }
 }
 

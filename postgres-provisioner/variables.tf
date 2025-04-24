@@ -15,6 +15,7 @@ variable "db_config" {
     app_database = string
     access_policy_arn = string
     secret_arn = string
+    user_secret_arn = string
     address = string
     port = string
   })

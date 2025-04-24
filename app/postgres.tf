@@ -14,6 +14,7 @@ module "databases" {
     allocated_storage = var.environment == "prod" ? 100 : 20
     multi_az = var.environment == "prod"
     proxy = var.environment == "prod"
+    proxy_user = var.environment == "prod" ? local.db_username : ""
     instance_class = var.environment == "prod" ? "db.t4g.large" : "db.t4g.micro"
     performance_insights_retention_period = var.environment == "prod" ? 31 : 7
   }
@@ -31,6 +32,7 @@ module "postgres-provisioner" {
     app_database = local.db_database
     access_policy_arn = local.database.access_policy_arn
     secret_arn = local.database.secret_arn
+    user_secret_arn = try(local.database.proxy_user_secret_arn, "")
     address = local.database.instance_address
     port = local.database.port
   }
