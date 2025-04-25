@@ -3,5 +3,5 @@ output "bucket_arn" {
 }
 
 output "object_arns" {
-  value = [for env_file in var.env_files : aws_s3_object.env_file[env_file].arn]
+  value = [for env_file in var.env_files : aws_s3_object.env_file[basename(env_file)].arn]
 }

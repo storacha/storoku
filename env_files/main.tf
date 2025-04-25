@@ -5,10 +5,10 @@ resource "aws_s3_bucket" "env_file_bucket" {
 }
 
 resource "aws_s3_object" "env_file" {
-  for_each = toset(var.env_files)
+  for_each = { for env_file in var.env_files : basename(env_file) => env_file}
   bucket = aws_s3_bucket.env_file_bucket[0].id
-  key = "${var.environment}-${var.app}-${basename(each.key)}.env"
-  source = each.key
-  etag = filemd5(each.key)
+  key = "${var.environment}-${var.app}-${each.key}.env"
+  source = each.value
+  etag = filemd5(each.value)
 }
 
