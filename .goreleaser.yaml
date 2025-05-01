@@ -34,11 +34,11 @@ changelog:
   skip: true
 brews:
   -
-    name: {{ .ProjectName }}
+    name: storoku
 
     alternative_names:
-      - {{ .ProjectName }}@{{ .Version }}
-      - {{ .ProjectName }}@{{ .Major }}
+      - storoku@{{ .Version }}
+      - storoku@{{ .Major }}
 
     # Git author used to commit to the repository.
     # Templates: allowed.
@@ -50,12 +50,6 @@ brews:
     #
     # Templates: allowed.
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-
-    # So you can `brew test` your formula.
-    #
-    # Template: allowed
-    test: |
-      system "#{bin}/storoku"
 
     # Repository to push the generated files to.
     repository:
