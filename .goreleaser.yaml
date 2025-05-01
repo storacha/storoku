@@ -1,0 +1,66 @@
+builds:
+  - main: ./cmd/storoku
+    binary: storoku
+    ldflags:
+      # Sets the version variable in the build package to the build version prefixed with a 'v'
+      # Sets the main.date to a static date for checksum verification. See https://goreleaser.com/customization/builds/#reproducible-builds.
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.CommitDate}} -X main.builtBy=goreleaser -X github.com/storacha/storoku/pkg/build.version=v{{.Version}}
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 'amd64'
+      - 'arm64'
+    # Change to a static date for checksum verification. See https://goreleaser.com/customization/builds/#reproducible-builds.
+    mod_timestamp: '{{.CommitTimestamp}}'
+    env:
+      - CGO_ENABLED=0
+universal_binaries:
+  - replace: true
+archives:
+  - format_overrides:
+    - goos: windows
+      format: zip
+    - goos: darwin
+      format: zip
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- if eq .Os "darwin" }}mac_os
+      {{- else }}{{ .Os }}{{ end }}_{{ .Arch }}
+release:
+  mode: keep-existing
+changelog:
+  skip: true
+brews:
+  -
+    name: {{ .ProjectName }}
+
+    alternative_names:
+      - {{ .ProjectName }}@{{ .Version }}
+      - {{ .ProjectName }}@{{ .Major }}
+
+    # Git author used to commit to the repository.
+    # Templates: allowed.
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+
+    # The project name and current git tag are used in the format string.
+    #
+    # Templates: allowed.
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+
+    # So you can `brew test` your formula.
+    #
+    # Template: allowed
+    test: |
+      system "#{bin}/storoku"
+
+    # Repository to push the generated files to.
+    repository:
+      owner: storacha
+      name: homebrew-storoku
+      branch: release-{{.Tag}}
+      pull_request:
+        enabled: true
