@@ -24,10 +24,10 @@ var secretAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		secretValue := Secret(cmd.StringArg("secret"))
+		if secretValue == "" {
 			return errors.New("must specify secret")
 		}
-		secretValue := Secret(cmd.StringArg("secret"))
 		for _, secret := range c.Secrets {
 			if secret == secretValue {
 				return errors.New("cannot add secret: secret already exists")
@@ -46,10 +46,10 @@ var secretRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		secretValue := Secret(cmd.StringArg("secret"))
+		if secretValue == "" {
 			return errors.New("must specify secret")
 		}
-		secretValue := Secret(cmd.StringArg("secret"))
 		for i, secret := range c.Secrets {
 			if secret == secretValue {
 				c.Secrets = append(c.Secrets[:i], c.Secrets[i+1:]...)

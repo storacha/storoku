@@ -25,10 +25,11 @@ var domainCustomCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		domainBase := cmd.StringArg("domain-base")
+		if domainBase == "" {
 			return errors.New("must specify a custom domain base")
 		}
-		c.DomainBase = cmd.StringArg("domain-base")
+		c.DomainBase = domainBase
 		return nil
 	}),
 }

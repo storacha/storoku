@@ -83,16 +83,26 @@ var newCmd = &cli.Command{
 		},
 	},
 	Action: func(ctx context.Context, cmd *cli.Command) error {
-		if cmd.Args().Len() < 1 {
-			return errors.New("must specify bucket")
-		}
 		app := cmd.StringArg("app")
+		if app == "" {
+			return errors.New("must specify an app name")
+		}
 		config, found, err := getConfig()
 		if err != nil {
 			return err
 		}
 		if found {
 			return fmt.Errorf("this project is already initialized with storoku run `storoku regen --app %s` to change the name", app)
+		}
+		fmt.Println("This will initialize this project with a Storoku deployment, which will add several files to your repository and possibly overwrite existing ones. Are you sure? (yes/no)")
+		reader := bufio.NewReader(os.Stdin)
+		response, err := reader.ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("reading user input: %w", err)
+		}
+		response = strings.TrimSpace(strings.ToLower(response))
+		if response != "yes" {
+			return errors.New("operation aborted by user")
 		}
 		config.App = app
 		err = regenerate(config)
@@ -217,18 +227,23 @@ func regenerate(config *Config) error {
 func generateFile(file string, tmpl *template.Template, config *Config) error {
 	filePath := filepath.Join(".", file)
 	if _, err := os.Stat(filePath); err == nil {
-		file, err := os.Open(filePath)
+
+		// never copy over .env.production.local.tpl once it exists
+		if file == "deploy/.env.production.local.tpl" {
+			return nil
+		}
+
+		f, err := os.Open(filePath)
 		if err != nil {
 			return fmt.Errorf("opening file '%s': %w", filePath, err)
 		}
-
-		reader := bufio.NewReader(file)
+		reader := bufio.NewReader(f)
 		firstLine, err := reader.ReadString('\n')
 		if err != nil && err != io.EOF {
-			file.Close()
+			f.Close()
 			return fmt.Errorf("reading first line of file '%s': %w", filePath, err)
 		}
-		file.Close()
+		f.Close()
 
 		if strings.TrimSpace(firstLine) == "# storoku:ignore" {
 			log.Infof("skipping file '%s' due to ignore directive", filePath)
@@ -249,6 +264,12 @@ func generateFile(file string, tmpl *template.Template, config *Config) error {
 	defer outFile.Close()
 	if err := tmpl.Execute(outFile, config); err != nil {
 		return fmt.Errorf("executing template for '%s': %w", filePath, err)
+	}
+	// this is a terrible hack to main execution permissions on esh
+	if filePath == "deploy/esh" {
+		if err := outFile.Chmod(0755); err != nil {
+			return fmt.Errorf("setting executable permissions for '%s': %w", filePath, err)
+		}
 	}
 	return nil
 }

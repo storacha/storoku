@@ -39,12 +39,12 @@ RUN \
   fi
 {{else}}
 RUN \
-  npx ncc build {{.EntryPoint}} -o {{.EntryPoint.OutputDir}}
+  npx @vercel/ncc build {{.EntryPoint}} -o build/{{.EntryPoint.OutputDir}}
 {{end}}
 
 {{range .Scripts}}
 RUN \
-  npx ncc build {{.}} -o {{.OutputDir}}
+  npx @vercel/ncc build {{.}} -o build/{{.OutputDir}}
 {{end}}
 
 # Production image, copy all the files and run next
@@ -59,18 +59,14 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nodejs
 
 COPY --from=builder /app/public ./public
-
 {{if .Next}}
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
 {{else}}
-COPY --from=builder --chown=nodejs:nodejs /app/build/{{.EntryPoint}} ./{{.EntryPoint.OutputDir}}
-{{end}}
-
-{{range .Scripts}}
-COPY --from=builder --chown=nodejs:nodejs /app/build/{{.}} {{.OutputDir}}
+COPY --from=builder --chown=nodejs:nodejs /app/build/{{.EntryPoint.OutputDir}} ./{{.EntryPoint.OutputDir}}
+{{end}}{{range .Scripts}}COPY --from=builder --chown=nodejs:nodejs /app/build/{{.OutputDir}} {{.OutputDir}}
 {{end}}
 USER nodejs
 {{end}}

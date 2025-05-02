@@ -31,10 +31,10 @@ var queueAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		queueName := cmd.StringArg("queue")
+		if queueName == "" {
 			return errors.New("must specify queue")
 		}
-		queueName := cmd.StringArg("queue")
 		for _, queue := range c.Queues {
 			if queue.Name == queueName {
 				return errors.New("cannot add queue: queue already exists")
@@ -57,10 +57,10 @@ var queueRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		queueName := cmd.StringArg("queue")
+		if queueName == "" {
 			return errors.New("must specify queue")
 		}
-		queueName := cmd.StringArg("queue")
 		for i, queue := range c.Queues {
 			if queue.Name == queueName {
 				c.Queues = append(c.Queues[:i], c.Queues[i+1:]...)

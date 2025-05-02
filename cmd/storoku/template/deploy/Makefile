@@ -162,7 +162,7 @@ wait-deploy:
   	\"containerOverrides\": [ \
     	{ \
 			  \"name\": \"first\", \
-    		\"command\": [\"node\", \"{{.Command}}"] \
+    		\"command\": [\"node\", \"{{.Command}}\"] \
 			} \
 		] \
 	}" \

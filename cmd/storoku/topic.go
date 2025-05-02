@@ -24,10 +24,10 @@ var topicAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		topicValue := cmd.StringArg("topic")
+		if topicValue == "" {
 			return errors.New("must specify topic")
 		}
-		topicValue := cmd.StringArg("topic")
 		for _, topic := range c.Topics {
 			if topic == topicValue {
 				return errors.New("cannot add topic: topic already exists")
@@ -46,10 +46,10 @@ var topicRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		topicValue := cmd.StringArg("topic")
+		if topicValue == "" {
 			return errors.New("must specify topic")
 		}
-		topicValue := cmd.StringArg("topic")
 		for i, topic := range c.Topics {
 			if topic == topicValue {
 				c.Topics = append(c.Topics[:i], c.Topics[i+1:]...)

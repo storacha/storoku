@@ -34,10 +34,11 @@ var didEnvPublicCustomCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		publicKeyEnvVar := cmd.StringArg("public-key-env-var")
+		if publicKeyEnvVar == "" {
 			return errors.New("must specify a custom public key environment variable")
 		}
-		c.DIDEnvVar = cmd.StringArg("public-key-env-var")
+		c.DIDEnvVar = publicKeyEnvVar
 		return nil
 	}),
 }
@@ -69,10 +70,11 @@ var didEnvPrivateCustomCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		privateKeyEnvVar := cmd.StringArg("private-key-env-var")
+		if privateKeyEnvVar == "" {
 			return errors.New("must specify a custom private key environment variable")
 		}
-		c.PrivateKeyEnvVar = cmd.StringArg("private-key-env-var")
+		c.PrivateKeyEnvVar = privateKeyEnvVar
 		return nil
 	}),
 }

@@ -31,10 +31,10 @@ var bucketAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		bucketName := cmd.StringArg("bucket")
+		if bucketName == "" {
 			return errors.New("must specify bucket")
 		}
-		bucketName := cmd.StringArg("bucket")
 		for _, bucket := range c.Buckets {
 			if bucket.Name == bucketName {
 				return errors.New("cannot add bucket: bucket already exists")
@@ -57,10 +57,10 @@ var bucketRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		bucketName := cmd.StringArg("bucket")
+		if bucketName == "" {
 			return errors.New("must specify bucket")
 		}
-		bucketName := cmd.StringArg("bucket")
 		for i, bucket := range c.Buckets {
 			if bucket.Name == bucketName {
 				c.Buckets = append(c.Buckets[:i], c.Buckets[i+1:]...)

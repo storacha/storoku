@@ -78,7 +78,8 @@ var jsEntrypointCmd = &cli.Command{
 	},
 
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		entrypoint := cmd.StringArg("entrypoint")
+		if entrypoint == "" {
 			return errors.New("must specify a custom domain base")
 		}
 		if c.JS == nil {
@@ -87,7 +88,7 @@ var jsEntrypointCmd = &cli.Command{
 		if c.JS.Next {
 			return errors.New("entry point is only set for projects that do not use next")
 		}
-		c.JS.EntryPoint = CompiledJS(cmd.StringArg("entrypoint"))
+		c.JS.EntryPoint = CompiledJS(entrypoint)
 		return nil
 	}),
 }
@@ -108,13 +109,13 @@ var jsScriptAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		scriptValue := CompiledJS(cmd.StringArg("script"))
+		if scriptValue == "" {
 			return errors.New("must specify script")
 		}
 		if c.JS == nil {
 			return errors.New("JS is not enabled for this project")
 		}
-		scriptValue := CompiledJS(cmd.StringArg("script"))
 		for _, script := range c.JS.Scripts {
 			if script == scriptValue {
 				return errors.New("cannot add script: script already exists")
@@ -133,13 +134,13 @@ var jsScriptRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		scriptValue := CompiledJS(cmd.StringArg("script"))
+		if scriptValue == "" {
 			return errors.New("must specify script")
 		}
 		if c.JS == nil {
 			return errors.New("JS is not enabled for this project")
 		}
-		scriptValue := CompiledJS(cmd.StringArg("script"))
 		for i, script := range c.JS.Scripts {
 			if script == scriptValue {
 				c.JS.Scripts = append(c.JS.Scripts[:i], c.JS.Scripts[i+1:]...)

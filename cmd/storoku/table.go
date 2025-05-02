@@ -36,10 +36,10 @@ var tableAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		tableName := cmd.StringArg("table")
+		if tableName == "" {
 			return errors.New("must specify table")
 		}
-		tableName := cmd.StringArg("table")
 		for _, table := range c.Tables {
 			if table.Name == tableName {
 				return errors.New("cannot add table: table already exists")
@@ -69,10 +69,10 @@ var tableRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		tableName := cmd.StringArg("table")
+		if tableName == "" {
 			return errors.New("must specify table")
 		}
-		tableName := cmd.StringArg("table")
 		for i, table := range c.Tables {
 			if table.Name == tableName {
 				c.Tables = append(c.Tables[:i], c.Tables[i+1:]...)

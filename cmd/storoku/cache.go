@@ -24,10 +24,10 @@ var cacheAddCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		cacheValue := cmd.StringArg("cache")
+		if cacheValue == "" {
 			return errors.New("must specify cache")
 		}
-		cacheValue := cmd.StringArg("cache")
 		for _, cache := range c.Caches {
 			if cache == cacheValue {
 				return errors.New("cannot add cache: cache already exists")
@@ -46,10 +46,10 @@ var cacheRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		cacheValue := cmd.StringArg("cache")
+		if cacheValue == "" {
 			return errors.New("must specify cache")
 		}
-		cacheValue := cmd.StringArg("cache")
 		for i, cache := range c.Caches {
 			if cache == cacheValue {
 				c.Caches = append(c.Caches[:i], c.Caches[i+1:]...)

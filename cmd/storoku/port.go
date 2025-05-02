@@ -19,16 +19,17 @@ var portCmd = &cli.Command{
 var portCustomCmd = &cli.Command{
 	Name:  "custom",
 	Usage: "set a custom port",
-	Flags: []cli.Flag{
-		&cli.IntFlag{
+	Arguments: []cli.Argument{
+		&cli.IntArg{
 			Name: "port",
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		if cmd.Args().Len() < 1 {
+		port := cmd.IntArg("port")
+		if port == 0 {
 			return errors.New("must specify a custom port")
 		}
-		c.Port = cmd.Int("port")
+		c.Port = port
 		return nil
 	}),
 }
