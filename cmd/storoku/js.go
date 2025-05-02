@@ -15,6 +15,7 @@ var jsCmd = &cli.Command{
 		jsOffCmd,
 		jsNextCmd,
 		jsScriptCmd,
+		jsEntrypointCmd,
 	},
 }
 

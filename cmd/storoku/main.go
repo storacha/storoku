@@ -66,6 +66,7 @@ func main() {
 			didEnvCmd,
 			portCmd,
 			jsCmd,
+			tableCmd,
 		},
 	}
 	if err := app.Run(ctx, os.Args); err != nil {

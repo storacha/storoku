@@ -1,3 +1,4 @@
+version: 2
 builds:
   - main: ./cmd/storoku
     binary: storoku
@@ -31,7 +32,7 @@ archives:
 release:
   mode: keep-existing
 changelog:
-  skip: true
+  disable: true
 brews:
   -
     name: storoku
