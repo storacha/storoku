@@ -6,6 +6,8 @@ on:
   workflow_run:
     workflows: [Releaser]
     types: [completed]
+permissions:
+  contents: write
 jobs:
   bin-releaser:
     name: Release Binaries
