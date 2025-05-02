@@ -36,6 +36,7 @@ changelog:
 brews:
   -
     name: storoku
+    token: "{{ .Env.HOMEBREW_GITHUB_PAC }}"
 
     # Git author used to commit to the repository.
     # Templates: allowed.
