@@ -8,6 +8,11 @@ variable "allowed_account_id" {
   type = string
 }
 
+variable "region" {
+  description = "aws region for all services"
+  type        = string
+}
+
 variable "private_key" {
   description = "private_key for the peer for this deployment"
   type = string

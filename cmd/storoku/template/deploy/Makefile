@@ -7,7 +7,7 @@ else
 	endif
 endif
 
-ECR_URI=$(TF_VAR_allowed_account_id).dkr.ecr.us-west-2.amazonaws.com
+ECR_URI=$(TF_VAR_allowed_account_id).dkr.ecr.$(TF_VAR_region).amazonaws.com
 IMAGE_TAG_BASE=$(ECR_URI)/$(TF_VAR_app)-ecr:$(TF_WORKSPACE)
 
 # This is a hack to eval the image tag only when it's a dependency, cause we don't want to set it until docker builds
@@ -29,7 +29,7 @@ eval_env_file: ../.env.production.local
 
 .PHONY: docker-login
 docker-login:
-	aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin $(ECR_URI)
+	aws ecr get-login-password --region $(TF_VAR_region) | docker login --username AWS --password-stdin $(ECR_URI)
 
 .env.terraform:
 

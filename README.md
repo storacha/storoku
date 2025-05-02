@@ -38,10 +38,11 @@ brew install opentofu
 tofu -u version
 ```
 
-The best way to get started with Storoku is to use the [Storoku starter example](./examples/starter). 
+Then install Storoku
 
-Generally, Storoku deployments are seperated into an app deployment that is specific to the deployment environment (i.e. 'staging', 'prod' or an individual developer deployment) and a shared deployment that covers resources that are shared across environments including several 'dev' resources that would be expensive to replicate for each individual developer.
+```terminal
+brew install storacha/storoku
+```
 
-In general, you will want to copy the files in the starter example to your project, and follow the README for the example to setup your deployment. Most deployment commands are run with `make`. Yes, that `make` get used to Makefiles again (but hopefully you will not have to edit)
+# Usage
 
-## 

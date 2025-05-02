@@ -16,7 +16,6 @@ variable "appState" {
 variable "allowed_account_ids" {
   description = "account ids used for AWS"
   type = list(string)
-  default = ["505595374361"]
 }
 
 variable "private_key" {
