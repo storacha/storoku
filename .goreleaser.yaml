@@ -36,7 +36,6 @@ changelog:
 brews:
   -
     name: storoku
-    token: "{{ .Env.HOMEBREW_GITHUB_PAC }}"
 
     # Git author used to commit to the repository.
     # Templates: allowed.
@@ -52,6 +51,7 @@ brews:
     # Repository to push the generated files to.
     repository:
       owner: storacha
+      token: "{{ .Env.HOMEBREW_GITHUB_PAC }}"
       name: homebrew-storoku
       branch: release-{{.Tag}}
       pull_request:
