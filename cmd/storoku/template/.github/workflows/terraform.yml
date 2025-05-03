@@ -88,13 +88,13 @@ jobs:
         if: {{"${{ inputs.apply }}"}}
         run: |
           make {{.Script.AsTask}}
-        working_directory: deploy{{end}}{{end}}{{end}}
+        working-directory: deploy{{end}}{{end}}{{end}}
 
       - name: Wait For Deployment
         if: {{"${{ inputs.apply }}"}}
         run: |
           make wait-deploy
-        working_directory: deploy
+        working-directory: deploy
       
       
       
