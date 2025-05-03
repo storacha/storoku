@@ -213,7 +213,7 @@ func regenerate(config *Config) error {
 		return fmt.Errorf("scanning directory: %w", err)
 	}
 	for file, tmpl := range parsedTemplates {
-		if file == "Dockerfile" && config.JS == nil {
+		if (file == "Dockerfile") && config.JS == nil {
 			continue
 		}
 		err := generateFile(file, tmpl, config)
@@ -228,8 +228,8 @@ func generateFile(file string, tmpl *template.Template, config *Config) error {
 	filePath := filepath.Join(".", file)
 	if _, err := os.Stat(filePath); err == nil {
 
-		// never copy over .env.production.local.tpl once it exists
-		if file == "deploy/.env.production.local.tpl" {
+		// never copy over .env.production.local.tpl or .dockerignore once they exist
+		if file == "deploy/.env.production.local.tpl" || file == ".dockerignore" {
 			return nil
 		}
 
@@ -296,9 +296,14 @@ func (c Config) Version() string {
 }
 
 type JS struct {
-	Next       bool         `json:"next"`
-	EntryPoint CompiledJS   `json:"entryPoint"`
-	Scripts    []CompiledJS `json:"scripts"`
+	Next       bool       `json:"next"`
+	EntryPoint CompiledJS `json:"entryPoint"`
+	Scripts    []Script   `json:"scripts"`
+}
+
+type Script struct {
+	Script  CompiledJS `json:"script"`
+	RunInCI bool       `json:"runInCI"`
 }
 
 type CompiledJS string

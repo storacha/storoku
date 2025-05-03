@@ -24,6 +24,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY ./deploy/.env.production.local ./.env.production.local
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -39,12 +40,12 @@ RUN \
   fi
 {{else}}
 RUN \
-  npx @vercel/ncc build {{.EntryPoint}} -o build/{{.EntryPoint.OutputDir}}
+  npx @vercel/ncc build {{.EntryPoint.Script}} -o build/{{.EntryPoint.Script.OutputDir}}
 {{end}}
 
 {{range .Scripts}}
 RUN \
-  npx @vercel/ncc build {{.}} -o build/{{.OutputDir}}
+  npx @vercel/ncc build {{.Script}} -o build/{{.Script.OutputDir}}
 {{end}}
 
 # Production image, copy all the files and run next
@@ -65,8 +66,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
 {{else}}
-COPY --from=builder --chown=nodejs:nodejs /app/build/{{.EntryPoint.OutputDir}} ./{{.EntryPoint.OutputDir}}
-{{end}}{{range .Scripts}}COPY --from=builder --chown=nodejs:nodejs /app/build/{{.OutputDir}} {{.OutputDir}}
+COPY --from=builder --chown=nodejs:nodejs /app/build/{{.EntryPoint.Script.OutputDir}} ./{{.EntryPoint.Script.OutputDir}}
+{{end}}{{range .Scripts}}COPY --from=builder --chown=nodejs:nodejs /app/build/{{.Script.OutputDir}} {{.Script.OutputDir}}
 {{end}}
 USER nodejs
 {{end}}

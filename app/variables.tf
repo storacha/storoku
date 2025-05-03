@@ -13,11 +13,6 @@ variable "appState" {
   type        = string
 }
 
-variable "allowed_account_ids" {
-  description = "account ids used for AWS"
-  type = list(string)
-}
-
 variable "private_key" {
   description = "private_key for the peer for this deployment"
   type = string

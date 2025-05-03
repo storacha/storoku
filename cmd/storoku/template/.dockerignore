@@ -1,5 +1,4 @@
 # Deployment
-{{if .JS}}/node_modules{{end}}
 deploy/.env.production.local.tpl
 deploy/.env.terraform.tpl
 deploy/.env.terraform

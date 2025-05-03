@@ -21,10 +21,10 @@ eval_image_tag:
 # GET the absolute location for .env.production.local, again, only after it exists
 
 
-get_env_file = ENV_FILE = $$(abspath ../.env.production.local)
+get_env_file = ENV_FILE = $$(abspath .env.production.local)
 
 .PHONE: eval_env_file
-eval_env_file: ../.env.production.local
+eval_env_file: .env.production.local
 	$(eval $(get_env_file))
 
 .PHONY: docker-login
@@ -33,10 +33,10 @@ docker-login:
 
 .env.terraform:
 
-../.env.production.local: .env.terraform .env.production.local.tpl
-	./esh -o ../.env.production.local .env.production.local.tpl 
+.env.production.local: .env.terraform .env.production.local.tpl
+	./esh -o .env.production.local .env.production.local.tpl 
 
-docker-build: docker-login ../.env.production.local
+docker-build: docker-login .env.production.local
 	docker buildx build --platform linux/arm64 -t $(IMAGE_TAG_BASE)-latest --load ..
 
 format-filter ="{{"{{ .Id }}"}}"
@@ -151,8 +151,8 @@ wait-deploy:
 
 {{with .JS}}{{range .Scripts}}
 
-.PHONY: {{.AsTask}}
-{{.AsTask}}:
+.PHONY: {{.Script.AsTask}}
+{{.Script.AsTask}}:
 	aws ecs run-task \
 	--cluster $(TF_WORKSPACE)-$(TF_VAR_app)-cluster \
 	--task-definition $(TF_WORKSPACE)-$(TF_VAR_app) \
@@ -162,7 +162,7 @@ wait-deploy:
   	\"containerOverrides\": [ \
     	{ \
 			  \"name\": \"first\", \
-    		\"command\": [\"node\", \"{{.Command}}\"] \
+    		\"command\": [\"node\", \"{{.Script.Command}}\"] \
 			} \
 		] \
 	}" \

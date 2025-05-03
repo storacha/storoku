@@ -108,8 +108,16 @@ var jsScriptAddCmd = &cli.Command{
 			Name: "script",
 		},
 	},
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:        "run-in-ci",
+			Value:       false,
+			DefaultText: "specify if this script will run automatically after a deployment",
+		},
+	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
 		scriptValue := CompiledJS(cmd.StringArg("script"))
+		runInCI := cmd.Bool("run-in-ci")
 		if scriptValue == "" {
 			return errors.New("must specify script")
 		}
@@ -117,11 +125,11 @@ var jsScriptAddCmd = &cli.Command{
 			return errors.New("JS is not enabled for this project")
 		}
 		for _, script := range c.JS.Scripts {
-			if script == scriptValue {
+			if script.Script == scriptValue {
 				return errors.New("cannot add script: script already exists")
 			}
 		}
-		c.JS.Scripts = append(c.JS.Scripts, scriptValue)
+		c.JS.Scripts = append(c.JS.Scripts, Script{Script: scriptValue, RunInCI: runInCI})
 		return nil
 	}),
 }
@@ -142,7 +150,7 @@ var jsScriptRemoveCmd = &cli.Command{
 			return errors.New("JS is not enabled for this project")
 		}
 		for i, script := range c.JS.Scripts {
-			if script == scriptValue {
+			if script.Script == scriptValue {
 				c.JS.Scripts = append(c.JS.Scripts[:i], c.JS.Scripts[i+1:]...)
 				return nil
 			}

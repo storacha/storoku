@@ -1,20 +1,20 @@
 # Storoku
 
-> Terraform Modules For Conventional Storacha Service Deployments
+> Automated Conventional Storacha Service Deployments
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Installation](#installation)
-- [Deployment](#deployment)
+- [Usage](#usage)
 - [Contribute](#contribute)
 - [License](#license)
 
 ## Overview
 
-This is a collection of resuable and interoperable terraform modules that standardize AWS deployments on Storacha
+Storoku is a code generator and a collection of resuable and interoperable terraform modules that standardize AWS deployments on Storacha.
 
-They're designed to:
+It's designed to:
 - save you tons of time on writing terraform deployments
 - use sensible defaults
 - keep things secure and using best practices (uniformity = less chances to mess it up)
@@ -30,19 +30,108 @@ Things you can setup with Storoku:
 
 ## Installation
 
-First, install OpenTofu (OpenTofu is a fork of Terraform that retains a full open source license -- please use OpenTofu when deploying Storacha services in order to avoid licensing issues).
+### Dependencies
+
+Storoku requires OpenTofu, Docker, and the AWS CLI, which must be configured and authenticated to your AWS account.
+
+All of these can be installed via Homebrew.
+
+### Homebrew Install (Mac or Linux)
+
+Install Storoku with Homebrew
 
 ```terminal
-brew update
-brew install opentofu
-tofu -u version
+brew install storacha/storoku/storoku
 ```
 
-Then install Storoku
+### Manual Install
 
-```terminal
-brew install storacha/storoku
+Download the [storoku binary from the latest release](https://github.com/storacha/storoku/releases/latest) for your operating system
+
+## Usage
+
+### Setup
+
+Go to the root directory of a new or existing project you wish to create a new deploy for.
+
+Run `storoku new ~your-project-name~` -- this operation will generate the storoku deployment. 
+
+It will setup a Storoku configuration file at .storoku.json.
+
+There are two ways to further configure your deployment:
+1. Use the storoku command line at modify your project, using commands to add and remove services, or set custom values. For example, the follow sequences of commands were used to generate the Storacha Bluesky Deployment:
+
+```
+storoku new bluesky
+storoku domain custom bsky.storage
+storoku port custom 3000 
+storoku secret add session_password
+storoku didenv private custom SERVER_IDENTITY_PRIVATE_KEY
+storoku database on
+storoku js on  
+storoku js next on 
+storoku js script add scripts/migrate.mjs --run-in-ci
 ```
 
-# Usage
+2. Edit .storoku.json manually and run `storoku regen`
 
+### What Storoku Generates
+
+There are three key components that Storoku generates when run:
+1. A terraform deployment to AWS
+2. Github CI Actions for that deployment to run continuously
+3. A Makefile to automate running deployments correctly
+
+### JS App Dockerfiles
+
+For JS apps, Storoku will automatically generate an optimized Dockerfile for you. There are two modes to Storoku JS apps -- you can use NextJS or you can simply specify a specific entry point file for your app. Either way your app will compiled in docker down to an optimized single file JS file with all included dependencies.
+
+You can also add scripts, seperate JS files that run outside the executable and are similarly compiled down to a single file, and can be run on demand apart the rest of the your primary app. This is particularly useful for things like database migration scripts.
+
+### Working With Storoku
+
+#### Deploying for dev
+
+In order to deploy from your local machine, you will first need to copy `deploy/.env.terraform.tpl` to `.env.terraform` and fill in your terraform workspace and any missing secret values.
+
+#### Deployment commands
+
+From the `deploy` directory, you can run:
+
+`make init` - to initialize your deployment and setup Terraform
+
+`make docker-build` - to setup and compile your docker image
+
+`make docker-push` - to push your docker image to ECR (make sure you run `make apply-shared` if you do this before anything else)
+
+`make plan` - plan out a terraform deployment to see what will change
+
+`make apply` - create and push a new deployment -- this will run all of the previous commands as well, FWIW
+
+`make wait-deploy` once your app on AWS, a blue-green deployment of any new code will begin. This task will essentially pause until your app is fully deployed
+
+#### Setting non-sensitive environment variables
+
+By default, when your container is deployed, Storoku will automatically set environment variables at runtime required to access resources like databases, tables, queues, etc. 
+
+If you want to add additional variables, you can use the file `deploy/.env.production.local.tpl` to edit what you can read. Moreover, this file is processed by ESH (https://github.com/jirutka/esh) before it's used, so you can set conditional logic based on environment, including all env vars in your .env.terraform (useful for setting for example environment specific env vars)
+
+#### Ejecting from Storoku
+
+**Storoku is intended to auto-generate your deployment, and every time you use the Storoku CLI to change your configuration, it will regenerate your deployment in full**
+
+Complex deployments will almost surely require manual configuration at some point. When you decide to you want to make custom edits to any file generated by Storoku, you should add a `# storoku:ignore` at the top of the file, which will cause that file to no longer be generated by storoku.
+
+Two files are considered "auto-ejected", in that once they are generated, if they don't already exist in your project, Storoku will no longer overwrite them on later configuration changes: `.dockerignore` and `deploy/.env.production.local.tpl`
+
+If you want to go to complete manual configuration, you can just delete `.storoku.json`, and which point the `storoku` command will no longer have any effect on your project until you run `storoku new` again.
+
+## Contribute
+
+Early days PRs are welcome!
+
+## License
+
+This library is dual-licensed under Apache 2.0 and MIT terms.
+
+Copyright 2024. Storacha Network Inc.
