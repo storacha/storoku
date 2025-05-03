@@ -82,3 +82,88 @@ var tableRemoveCmd = &cli.Command{
 		return errors.New("cannot remove table: table does not exist")
 	}),
 }
+
+var attributeCmd = &cli.Command{
+	Name:  "attribute",
+	Usage: "add and remove attributes",
+	Commands: []*cli.Command{
+		attributeAddCmd,
+		attributeRemoveCmd,
+	},
+}
+
+var attributeAddCmd = &cli.Command{
+	Name: "add",
+	Arguments: []cli.Argument{
+		&cli.StringArg{
+			Name: "attribute",
+		},
+	},
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:     "table",
+			Required: true,
+		},
+		&cli.StringFlag{
+			Name:        "type",
+			Required:    true,
+			DefaultText: "specify the attribute type (S = String, B = Binary, N = Number)",
+		},
+	},
+	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
+		tableName := cmd.String("table")
+		attributeName := cmd.StringArg("attribute")
+		if tableName == "" || attributeName == "" {
+			return errors.New("must specify table and attribute")
+		}
+		for i, table := range c.Tables {
+			if table.Name == tableName {
+				for _, attr := range table.Attributes {
+					if attr.Name == attributeName {
+						return errors.New("cannot add attribute: attribute already exists")
+					}
+				}
+				attrType := cmd.String("type")
+				c.Tables[i].Attributes = append(c.Tables[i].Attributes, Attribute{
+					Name: attributeName,
+					Type: attrType,
+				})
+				return nil
+			}
+		}
+		return errors.New("cannot add attribute: table does not exist")
+	}),
+}
+
+var attributeRemoveCmd = &cli.Command{
+	Name: "remove",
+	Arguments: []cli.Argument{
+		&cli.StringArg{
+			Name: "attribute",
+		},
+	},
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name: "table",
+		},
+	},
+	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
+		tableName := cmd.String("table")
+		attributeName := cmd.StringArg("attribute")
+		if tableName == "" || attributeName == "" {
+			return errors.New("must specify table and attribute")
+		}
+		for i, table := range c.Tables {
+			if table.Name == tableName {
+				for j, attr := range table.Attributes {
+					if attr.Name == attributeName {
+						c.Tables[i].Attributes = append(c.Tables[i].Attributes[:j], c.Tables[i].Attributes[j+1:]...)
+						return nil
+					}
+				}
+				return errors.New("cannot remove attribute: attribute does not exist")
+			}
+		}
+		return errors.New("cannot remove attribute: table does not exist")
+	}),
+}

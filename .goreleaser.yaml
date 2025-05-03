@@ -43,10 +43,6 @@ brews:
       name: goreleaserbot
       email: bot@goreleaser.com
 
-    dependencies:
-      - name: opentofu
-      - name: awscli
-
     # The project name and current git tag are used in the format string.
     #
     # Templates: allowed.

@@ -46,7 +46,7 @@ resource "random_password" "{{.Lower}}" {
 {{end}}
 
 module "app" {
-  source = "github.com/storacha/storoku?ref={{.Version}}//app"
+  source = "github.com/storacha/storoku//app?ref={{.Version}}"
   private_key = var.private_key{{if .PrivateKeyEnvVar}}
   private_key_env_var = "{{ .PrivateKeyEnvVar }}"{{end}}{{if .Port}}
   httpport = {{ .Port }}{{end}}
