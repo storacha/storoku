@@ -13,6 +13,7 @@ var tableCmd = &cli.Command{
 	Commands: []*cli.Command{
 		tableAddCmd,
 		tableRemoveCmd,
+		attributeCmd,
 	},
 }
 
