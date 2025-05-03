@@ -125,7 +125,7 @@ endif
 .PHONY: apply-shared
 
 apply-shared: shared/.terraform
-	TF_WORKSPACE=default tofu -chdir=shared apply
+	TF_WORKSPACE=default tofu -chdir=shared apply $(APPLY_ARGS)
 
 .PHONY: apply-app
 
@@ -139,7 +139,7 @@ apply: apply-shared apply-app
 .PHONY: console-shared
 
 console-shared: shared/.terraform
-	TF_WORKSPACE=default tofu -chdir=shared console
+	TF_WORKSPACE=default tofu -chdir=shared console $(APPLY_ARGS)
 
 .PHONY: console-app
 console: app/.terraform .tfworkspace eval_image_tag eval_env_file
