@@ -22,7 +22,9 @@ on:
         required: true
       private-key:
         required: true
-
+      region:
+        required: true
+        
 concurrency:
   group: {{"${{ github.workflow }}"}}-{{"${{ inputs.workspace }}"}}-{{"${{ github.event.pull_request.number || github.ref }}"}}
   cancel-in-progress: true

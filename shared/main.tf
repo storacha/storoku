@@ -6,10 +6,10 @@ resource "aws_route53_zone" "primary" {
 }
 
 resource "cloudflare_dns_record" "app" {
-  for_each = toset(var.setup_cloudflare ? aws_route53_zone.primary.name_servers : [])
+  count = var.var.setup_cloudflare ? 4 : 0
   zone_id = var.zone_id
   comment = "route53 DNS record"
-  content = each.key
+  content = aws_route53_zone.primary.name_servers[count.index]
   name = local.domain_base
   type = "NS"
   ttl = 1
