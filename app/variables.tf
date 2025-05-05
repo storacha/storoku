@@ -103,6 +103,8 @@ variable "deployment_config" {
     memory = number
     service_min = number
     service_max = number
+    httpport = number
+    readonly = bool
   })
   default = null
 }
