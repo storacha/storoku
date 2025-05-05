@@ -4,7 +4,7 @@ locals {
   vpc = local.dedicated_resources ? module.vpc[0] : data.terraform_remote_state.shared.outputs.dev_vpc
   buckets = var.buckets 
   caches = local.dedicated_resources ? length(var.caches) > 0 ? module.caches[0].caches : {} : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
-  database = local.dedicated_resources ? var.create_db ? module.databases[0].database : {} : try(data.terraform_remote_state.shared.outputs.dev_databases.database, {})
+  database = local.dedicated_resources ? var.create_db ? module.databases[0].database : null : try(data.terraform_remote_state.shared.outputs.dev_databases.database, null)
   domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.storacha.network"
   domain = {
     name = var.environment == "prod" ? local.domain_base : "${var.environment}.${local.domain_base}"
