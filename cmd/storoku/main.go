@@ -67,6 +67,7 @@ func main() {
 			portCmd,
 			jsCmd,
 			tableCmd,
+			writeToContainerCmd,
 		},
 	}
 	if err := app.Run(ctx, os.Args); err != nil {
