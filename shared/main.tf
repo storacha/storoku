@@ -6,7 +6,7 @@ resource "aws_route53_zone" "primary" {
 }
 
 resource "cloudflare_dns_record" "app" {
-  count = var.var.setup_cloudflare ? 4 : 0
+  count = var.setup_cloudflare ? 4 : 0
   zone_id = var.zone_id
   comment = "route53 DNS record"
   content = aws_route53_zone.primary.name_servers[count.index]
