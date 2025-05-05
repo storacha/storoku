@@ -83,6 +83,7 @@ variable "config" {
     service_min = number
     service_max = number
     httpport = number
+    readonly = bool
   })
 }
 

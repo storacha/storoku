@@ -55,6 +55,7 @@ module "app" {
   did_env_var = "{{.DIDEnvVar}}"{{end}}
   app = var.app
   appState = var.app
+  write_to_container = {{.WriteToContainer}}
   environment = terraform.workspace
   # if there are any env vars you want available only to your container
   # in the vpc as opposed to set in the dockerfile, enter them here

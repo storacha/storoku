@@ -20,7 +20,7 @@ resource "aws_ecs_task_definition" "app" {
       cpu                   = var.config.cpu
       memory                 = var.config.memory
       essential              = true
-      readonlyRootFilesystem = true
+      readonlyRootFilesystem = var.config.readonly
       portMappings = [
         {
           containerPort = var.config.httpport

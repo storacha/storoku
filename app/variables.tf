@@ -146,3 +146,9 @@ variable "domain_base" {
   type        = string
   default = ""
 }
+
+variable "write_to_container" {
+  description = "whether applications can write to the container file system"
+  type = bool
+  default = false
+}

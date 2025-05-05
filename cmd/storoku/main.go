@@ -289,6 +289,7 @@ type Config struct {
 	Buckets          []Bucket `json:"buckets"`
 	Secrets          []Secret `json:"secrets"`
 	Tables           []Table  `json:"tables"`
+	WriteToContainer bool     `json:"writeToContainer"`
 }
 
 func (c Config) Version() string {
