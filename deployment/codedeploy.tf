@@ -33,6 +33,7 @@ aws --version
 echo "Constructing deployment command..."
 COMMAND=$(cat <<EOT
 aws deploy create-deployment \
+    --region "${data.aws_region.current.name}" \
     --application-name "${aws_codedeploy_app.app.name}" \
     --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
     --deployment-group-name "${aws_codedeploy_deployment_group.deployment_group.deployment_group_name}" \
