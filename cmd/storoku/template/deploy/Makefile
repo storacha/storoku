@@ -61,11 +61,9 @@ clean-shared:
 
 clean: clean-terraform clean-shared
 
-.PHONY: app/.terraform
 app/.terraform:
 	TF_WORKSPACE=default tofu -chdir=app init -backend-config="key=storacha/$(TF_VAR_app)/terraform.tfstate"
 
-.PHONY: shared/.terraform
 shared/.terraform:
 	TF_WORKSPACE=default tofu -chdir=shared init -backend-config="key=storacha/$(TF_VAR_app)/shared.tfstate"
 
