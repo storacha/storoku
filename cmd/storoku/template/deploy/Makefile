@@ -147,13 +147,14 @@ console: app/.terraform .tfworkspace eval_image_tag eval_env_file
 
 .PHONY: wait-deploy
 wait-deploy:
-	aws deploy wait deployment-successful --deployment-id $(shell aws deploy list-deployments --deployment-group-name $(TF_WORKSPACE)-$(TF_VAR_app)-code-deploy-deployment-group --application-name $(TF_WORKSPACE)-$(TF_VAR_app)-code-deploy-app --query "deployments[0]" --output text)
+	aws deploy wait deployment-successful --region $(TF_VAR_region) --deployment-id $(shell aws deploy list-deployments --region $(TF_VAR_region) --deployment-group-name $(TF_WORKSPACE)-$(TF_VAR_app)-code-deploy-deployment-group --application-name $(TF_WORKSPACE)-$(TF_VAR_app)-code-deploy-app --query "deployments[0]" --output text)
 
 {{with .JS}}{{range .Scripts}}
 
 .PHONY: {{.Script.AsTask}}
 {{.Script.AsTask}}:
 	aws ecs run-task \
+	--region $(TF_VAR_region) \
 	--cluster $(TF_WORKSPACE)-$(TF_VAR_app)-cluster \
 	--task-definition $(TF_WORKSPACE)-$(TF_VAR_app) \
 	--count 1 \
@@ -166,6 +167,6 @@ wait-deploy:
 			} \
 		] \
 	}" \
-   --network-configuration '$(shell aws ecs describe-services --cluster $(TF_WORKSPACE)-$(TF_VAR_app)-cluster --service $(TF_WORKSPACE)-$(TF_VAR_app)-service --query "services[0].networkConfiguration")'
+   --network-configuration '$(shell aws ecs describe-services --region $(TF_VAR_region) --cluster $(TF_WORKSPACE)-$(TF_VAR_app)-cluster --service $(TF_WORKSPACE)-$(TF_VAR_app)-service --query "services[0].networkConfiguration")'
 {{end}}
 {{end}}
