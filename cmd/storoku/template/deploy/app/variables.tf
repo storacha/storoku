@@ -44,3 +44,9 @@ variable "domain_base" {
   type = string
   default = ""
 }
+{{range .Secrets}}{{if .Variable}}
+variable "{{.Lower}}" {
+  description = "value for {{.Lower}} secret"
+  type = string
+}
+{{end}}{{end}}

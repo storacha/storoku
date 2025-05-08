@@ -23,17 +23,26 @@ var secretAddCmd = &cli.Command{
 			Name: "secret",
 		},
 	},
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:        "variable",
+			Value:       false,
+			DefaultText: "specifies whether this value is specified through a terraform variable or auto generated",
+		},
+	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		secretValue := Secret(cmd.StringArg("secret"))
+		secretValue := cmd.StringArg("secret")
+		variable := cmd.Bool("variable")
+
 		if secretValue == "" {
 			return errors.New("must specify secret")
 		}
 		for _, secret := range c.Secrets {
-			if secret == secretValue {
+			if secret.Name == secretValue {
 				return errors.New("cannot add secret: secret already exists")
 			}
 		}
-		c.Secrets = append(c.Secrets, secretValue)
+		c.Secrets = append(c.Secrets, Secret{Name: secretValue, Variable: variable})
 		return nil
 	}),
 }
@@ -46,12 +55,12 @@ var secretRemoveCmd = &cli.Command{
 		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
-		secretValue := Secret(cmd.StringArg("secret"))
+		secretValue := cmd.StringArg("secret")
 		if secretValue == "" {
 			return errors.New("must specify secret")
 		}
 		for i, secret := range c.Secrets {
-			if secret == secretValue {
+			if secret.Name == secretValue {
 				c.Secrets = append(c.Secrets[:i], c.Secrets[i+1:]...)
 				return nil
 			}
