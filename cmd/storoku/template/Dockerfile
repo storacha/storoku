@@ -40,7 +40,7 @@ RUN \
   fi
 {{else}}
 RUN \
-  npx @vercel/ncc build {{.EntryPoint.Script}} -o build/{{.EntryPoint.Script.OutputDir}}
+  npx @vercel/ncc build {{.EntryPoint}} -o build/{{.EntryPoint.OutputDir}}
 {{end}}
 
 {{range .Scripts}}
@@ -66,7 +66,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
 {{else}}
-COPY --from=builder --chown=nodejs:nodejs /app/build/{{.EntryPoint.Script.OutputDir}} ./{{.EntryPoint.Script.OutputDir}}
+COPY --from=builder --chown=nodejs:nodejs /app/build/{{.EntryPoint.OutputDir}} ./{{.EntryPoint.OutputDir}}
 {{end}}{{range .Scripts}}COPY --from=builder --chown=nodejs:nodejs /app/build/{{.Script.OutputDir}} {{.Script.OutputDir}}
 {{end}}
 USER nodejs
