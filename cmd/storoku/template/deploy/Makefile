@@ -23,7 +23,7 @@ eval_image_tag:
 
 get_env_file = ENV_FILE = $$(abspath .env.production.local)
 
-.PHONE: eval_env_file
+.PHONY: eval_env_file
 eval_env_file: .env.production.local
 	$(eval $(get_env_file))
 
@@ -62,7 +62,7 @@ clean-shared:
 clean: clean-terraform clean-shared
 
 app/.terraform:
-	tofu -chdir=app init -backend-config="key=storacha/$(TF_VAR_app)/terraform.tfstate"
+	TF_WORKSPACE=default tofu -chdir=app init -backend-config="key=storacha/$(TF_VAR_app)/terraform.tfstate"
 
 shared/.terraform:
 	TF_WORKSPACE=default tofu -chdir=shared init -backend-config="key=storacha/$(TF_VAR_app)/shared.tfstate"
