@@ -37,13 +37,13 @@ provider "aws" {
   alias = "acm"
 }
 
-{{range .Secrets}}
+{{range .Secrets}}{{if .Variable}}{{else}}
 resource "random_password" "{{.Lower}}" {
   length           = 32
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
-{{end}}
+{{end}}{{end}}
 
 module "app" {
   source = "github.com/storacha/storoku//app?ref={{.Version}}"
@@ -66,8 +66,8 @@ module "app" {
   # enter secret values your app will use here -- these will be available
   # as env vars in the container at runtime
   secrets = { {{range .Secrets }}
-    "{{.Upper}}" = random_password.{{.Lower}}.result
-{{end}}  }
+    "{{.Upper}}" = {{if .Variable}}var.{{.Lower}}{{else}}random_password.{{.Lower}}.result{{end}}{{end}}
+  }
   # enter any sqs queues you want to create here
   queues = [{{range .Queues}}
     {

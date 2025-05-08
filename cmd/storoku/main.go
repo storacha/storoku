@@ -336,14 +336,17 @@ type Bucket struct {
 	Public bool   `json:"public"`
 }
 
-type Secret string
+type Secret struct {
+	Name     string `json:"name"`
+	Variable bool   `json:"variable"`
+}
 
 func (s Secret) Upper() string {
-	return strings.ToUpper(string(s))
+	return strings.ToUpper(s.Name)
 }
 
 func (s Secret) Lower() string {
-	return strings.ToLower(string(s))
+	return strings.ToLower(s.Name)
 }
 
 type Table struct {
