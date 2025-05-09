@@ -17,6 +17,7 @@ import (
 	"text/template"
 
 	logging "github.com/ipfs/go-log/v2"
+	"github.com/stoewer/go-strcase"
 	"github.com/storacha/storoku/pkg/build"
 	"github.com/urfave/cli/v3"
 )
@@ -347,6 +348,9 @@ func (s Secret) Upper() string {
 
 func (s Secret) Lower() string {
 	return strings.ToLower(s.Name)
+}
+func (s Secret) LowerKebab() string {
+	return strcase.KebabCase(strings.ToLower(s.Name))
 }
 
 type Table struct {

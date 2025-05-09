@@ -39,7 +39,8 @@ env:
   TF_VAR_app: {{.App}}
   TF_VAR_domain_base: {{.DomainBase}}
   TF_VAR_allowed_account_id: {{"${{ secrets.aws-account-id }}"}}
-  TF_VAR_region: {{"${{ secrets.region }}"}}
+  TF_VAR_region: {{"${{ secrets.region }}"}}{{range .Secrets}}{{if .Variable}}
+  TF_VAR_{{.Lower}}: {{"${{ secrets."}}{{.LowerKebab}}{{" }}"}}{{end}}{{end}}
   DEPLOY_ENV: ci
 
 permissions:

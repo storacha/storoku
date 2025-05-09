@@ -40,7 +40,8 @@ jobs:
       aws-account-id: {{"${{ secrets.STAGING_AWS_ACCOUNT_ID }}"}}
       aws-region: {{"${{ secrets.STAGING_AWS_REGION }}"}}
       region: {{"${{ secrets.STAGING_AWS_REGION }}"}}
-      private-key: {{"${{ secrets.STAGING_PRIVATE_KEY }}"}}
+      private-key: {{"${{ secrets.STAGING_PRIVATE_KEY }}"}}{{range .Secrets}}{{if .Variable}}
+      {{.LowerKebab}}: {{"${{ secrets.STAGING_"}}{{.Upper}}{{" }}"}}{{end}}{{end}}
 
   # apply prod on successful release, plan otherwise
   production:
@@ -58,5 +59,6 @@ jobs:
       aws-account-id: {{"${{ secrets.PROD_AWS_ACCOUNT_ID }}"}}
       aws-region: {{"${{ secrets.PROD_AWS_REGION }}"}}
       region: {{"${{ secrets.PROD_AWS_REGION }}"}}
-      private-key: {{"${{ secrets.PROD_PRIVATE_KEY }}"}}
+      private-key: {{"${{ secrets.PROD_PRIVATE_KEY }}"}}{{range .Secrets}}{{if .Variable}}
+      {{.LowerKebab}}: {{"${{ secrets.PROD_"}}{{.Upper}}{{" }}"}}{{end}}{{end}}
       
