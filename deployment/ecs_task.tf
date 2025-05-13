@@ -256,8 +256,14 @@ data "aws_iam_policy_document" "task_dynamodb_put_get_document" {
 
   statement {
     actions = [
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:BatchWriteItem",
       "dynamodb:GetItem",
       "dynamodb:PutItem",
+      "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:DescribeTable",
     ]
     resources = [for k, table in var.tables : table.arn]
   }
