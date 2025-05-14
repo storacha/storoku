@@ -40,7 +40,9 @@ env:
   TF_VAR_domain_base: {{.DomainBase}}
   TF_VAR_allowed_account_id: {{"${{ secrets.aws-account-id }}"}}
   TF_VAR_region: {{"${{ secrets.region }}"}}{{range .Secrets}}{{if .Variable}}
-  TF_VAR_{{.Lower}}: {{"${{ secrets."}}{{.LowerKebab}}{{" }}"}}{{end}}{{end}}
+  TF_VAR_{{.Lower}}: {{"${{ secrets."}}{{.LowerKebab}}{{" }}"}}{{end}}{{end}}{{if .Cloudflare}}
+  TF_VAR_cloudflare_zone_id: {{"${{ secrets.cloudflare-zone-id }}"}}
+  CLOUDFLARE_API_TOKEN: {{"${{ secrets.cloudflare-api-token }}"}}{{end}}
   DEPLOY_ENV: ci
 
 permissions:

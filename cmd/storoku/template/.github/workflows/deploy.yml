@@ -41,7 +41,9 @@ jobs:
       aws-region: {{"${{ secrets.STAGING_AWS_REGION }}"}}
       region: {{"${{ secrets.STAGING_AWS_REGION }}"}}
       private-key: {{"${{ secrets.STAGING_PRIVATE_KEY }}"}}{{range .Secrets}}{{if .Variable}}
-      {{.LowerKebab}}: {{"${{ secrets.STAGING_"}}{{.Upper}}{{" }}"}}{{end}}{{end}}
+      {{.LowerKebab}}: {{"${{ secrets.STAGING_"}}{{.Upper}}{{" }}"}}{{end}}{{end}}{{if .Cloudflare}}
+      cloudflare-zone-id: {{"${{ secrets.STAGING_CLOUDFLARE_ZONE_ID }}"}}
+      cloudflare-api-token: {{"${{ secrets.STAGING_CLOUDFLARE_API_TOKEN }}"}}{{end}}
 
   # apply prod on successful release, plan otherwise
   production:
@@ -60,5 +62,7 @@ jobs:
       aws-region: {{"${{ secrets.PROD_AWS_REGION }}"}}
       region: {{"${{ secrets.PROD_AWS_REGION }}"}}
       private-key: {{"${{ secrets.PROD_PRIVATE_KEY }}"}}{{range .Secrets}}{{if .Variable}}
-      {{.LowerKebab}}: {{"${{ secrets.PROD_"}}{{.Upper}}{{" }}"}}{{end}}{{end}}
+      {{.LowerKebab}}: {{"${{ secrets.PROD_"}}{{.Upper}}{{" }}"}}{{end}}{{end}}{{if .Cloudflare}}
+      cloudflare-zone-id: {{"${{ secrets.PROD_CLOUDFLARE_ZONE_ID }}"}}
+      cloudflare-api-token: {{"${{ secrets.PROD_CLOUDFLARE_API_TOKEN }}"}}{{end}}
       
