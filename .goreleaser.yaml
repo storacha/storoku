@@ -53,4 +53,4 @@ brews:
       owner: storacha
       token: "{{ .Env.HOMEBREW_GITHUB_PAC }}"
       name: homebrew-storoku
-      branch: release-{{.Tag}}
+      branch: main
