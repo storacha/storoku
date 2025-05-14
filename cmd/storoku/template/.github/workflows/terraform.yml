@@ -23,7 +23,13 @@ on:
       private-key:
         required: true
       region:
+        required: true{{range .Secrets}}{{if .Variable}}
+      {{.LowerKebab}}:
+        required: true{{end}}{{end}}{{if .Cloudflare}}
+      cloudflare-zone-id:
         required: true
+      cloudflare-api-token:
+        required: true{{end}}
         
 concurrency:
   group: {{"${{ github.workflow }}"}}-{{"${{ inputs.workspace }}"}}-{{"${{ github.event.pull_request.number || github.ref }}"}}
