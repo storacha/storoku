@@ -259,6 +259,7 @@ data "aws_iam_policy_document" "task_dynamodb_put_get_document" {
       "dynamodb:Query",
       "dynamodb:Scan",
       "dynamodb:BatchWriteItem",
+      "dynamodb:BatchGetItem",
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
