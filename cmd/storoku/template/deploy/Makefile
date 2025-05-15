@@ -34,7 +34,7 @@ docker-login:
 .env.terraform:
 
 .env.production.local: .env.terraform .env.production.local.tpl
-	./esh -o .env.production.local .env.production.local.tpl 
+	./esh -s /bin/bash -o .env.production.local .env.production.local.tpl 
 
 docker-build: docker-login .env.production.local
 	docker buildx build --platform linux/arm64 -t $(IMAGE_TAG_BASE)-latest --load ..
