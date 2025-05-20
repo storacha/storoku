@@ -19,7 +19,7 @@ terraform {
 
 provider "aws" {
   allowed_account_ids = [var.allowed_account_id]
-  region = var.region
+  region = "us-west-2"
   default_tags {
     tags = {
       "Environment" = terraform.workspace

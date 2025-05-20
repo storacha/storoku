@@ -13,6 +13,20 @@ resource "aws_ecr_repository" "ecr" {
   }
 }
 
+resource "aws_ecr_replication_configuration" "ecr" {
+  replication_configuration {
+    rule {
+      destination {
+        region      = "us-east-2"
+        registry_id = data.aws_caller_identity.current.account_id
+      }
+      repository_filter {
+        filter_type = "PREFIX_MATCH"
+        filter = "${var.app}-ecr" 
+      }
+    }
+  }
+}
 resource "aws_kms_key" "ecr_kms_key" {
   description             = "KMS key to encrypt ECR images "
   deletion_window_in_days = 7
