@@ -33,7 +33,7 @@ eval_env_file: .env.production.local
 
 .PHONY: docker-login
 docker-login:
-	aws ecr get-login-password --region $(TF_VAR_region) | docker login --username AWS --password-stdin $(ECR_URI)
+	aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin $(ECR_URI)
 
 .env.terraform:
 
