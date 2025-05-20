@@ -10,11 +10,11 @@ endif
 ECR_URI=$(TF_VAR_allowed_account_id).dkr.ecr.us-west-2.amazonaws.com
 REPLICATED_ECR_URI=$(TF_VAR_allowed_account_id).dkr.ecr.$(TF_VAR_region).amazonaws.com
 IMAGE_TAG_BASE=$(ECR_URI)/$(TF_VAR_app)-ecr:$(TF_WORKSPACE)
-REPLICATION_IMAGE_TAG_BASE=$(REPLICATED_ECR_URI)/$(TF_VAR_app)-ecr:$(TF_WORKSPACE)
+REPLICATED_IMAGE_TAG_BASE=$(REPLICATED_ECR_URI)/$(TF_VAR_app)-ecr:$(TF_WORKSPACE)
 
 # This is a hack to eval the image tag only when it's a dependency, cause we don't want to set it until docker builds
 get_image_tag = IMAGE_TAG = $$(IMAGE_TAG_BASE)-$$(shell docker inspect --format $$(format-filter) $$(IMAGE_TAG_BASE)-latest | sed -e 's/sha256://g')
-get_replicated_image_tag = REPLICATION_IMAGE_TAG = $$(REPLICATION_IMAGE_TAG_BASE)-$$(shell docker inspect --format $$(format-filter) $$(IMAGE_TAG_BASE)-latest | sed -e 's/sha256://g')
+get_replicated_image_tag = REPLICATED_IMAGE_TAG = $$(REPLICATED_IMAGE_TAG_BASE)-$$(shell docker inspect --format $$(format-filter) $$(IMAGE_TAG_BASE)-latest | sed -e 's/sha256://g')
 
 .PHONY: eval_image_tag
 
