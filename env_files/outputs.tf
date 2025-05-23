@@ -1,3 +1,7 @@
+output "bucket_id" {
+  value = length(var.env_files) > 0 ? aws_s3_bucket.env_file_bucket[0].id : ""
+}
+
 output "bucket_arn" {
   value = length(var.env_files) > 0 ? aws_s3_bucket.env_file_bucket[0].arn : ""  
 }

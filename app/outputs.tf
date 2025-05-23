@@ -15,7 +15,7 @@ output "kms" {
 }
 
 output "secrets" {
-  value = module.secrets.secrets
+  value = local.secrets
 }
 
 output "ecs_infra" {
@@ -36,4 +36,8 @@ output "queue" {
 
 output "topics" {
   value = module.topics
+}
+
+output "env_files" {
+  value = module.env_files
 }
