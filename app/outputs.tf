@@ -26,6 +26,10 @@ output "deployment" {
   value = module.deployment
 }
 
+output "buckets" {
+  value = module.buckets
+}
+
 output "tables" {
   value = module.tables
 }
