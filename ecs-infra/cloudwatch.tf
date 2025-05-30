@@ -1,7 +1,7 @@
 
 resource "aws_cloudwatch_log_group" "logs" {
   name              = "${var.environment}-${var.app}-ecs-cluster-log"
-  retention_in_days = var.environment == "prod" ? 365 : 14
+  retention_in_days = var.is_production ? 365 : 14
   kms_key_id        = aws_kms_key.encryption_cloudwatch.arn
 }
 

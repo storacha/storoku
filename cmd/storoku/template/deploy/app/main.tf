@@ -84,12 +84,12 @@ module "app" {
         {
           name = "{{.Name}}"
           type = "{{.Type}}"
-        },
-      {{end}}]
+        },{{end}}
+      ]
       hash_key = "{{.HashKey}}"{{if .RangeKey }}
       range_key ="{{.RangeKey}}"{{end}}
-    },
-  {{end}}]
+    },{{end}}
+  ]
   buckets = [{{range .Buckets}}
     {
       name = "{{ .Name }}"

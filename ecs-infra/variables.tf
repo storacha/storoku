@@ -8,6 +8,11 @@ variable "environment" {
   type        = string
 }
 
+variable "is_production" {
+  description = "Indicates whether production-grade features should be enabled"
+  type        = bool
+}
+
 variable "kms" {
   description = "id of a KMS key used to encrypt"
   type = object({

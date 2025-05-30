@@ -19,8 +19,8 @@ resource "aws_dynamodb_table" "table" {
   }
 
   point_in_time_recovery {
-    enabled = var.environment == "prod"
+    enabled = var.is_production
   }
 
-  deletion_protection_enabled = var.environment == "prod"
+  deletion_protection_enabled = var.is_production
 }

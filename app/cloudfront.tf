@@ -1,6 +1,6 @@
 locals {
   # Only prod gets a CloudFront distribution
-  should_create_cloudfront = var.environment == "prod"
+  should_create_cloudfront = local.is_production
 }
 
 terraform {

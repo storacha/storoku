@@ -1,6 +1,5 @@
 locals {
-  # Only prod and staging get their own caches. All other envs will share the dev caches
-    should_create_postgres = var.create_db && (terraform.workspace == "prod" || terraform.workspace == "staging")
+  should_create_postgres = var.create_db && local.dedicated_resources
 }
 
 module "databases" {
@@ -11,12 +10,12 @@ module "databases" {
   environment = var.environment
 
   db_config = {
-    allocated_storage = var.environment == "prod" ? 100 : 20
-    multi_az = var.environment == "prod"
-    proxy = var.environment == "prod"
-    proxy_user = var.environment == "prod" ? local.db_username : ""
-    instance_class = var.environment == "prod" ? "db.t4g.large" : "db.t4g.micro"
-    performance_insights_retention_period = var.environment == "prod" ? 31 : 7
+    allocated_storage = local.is_production ? 100 : 20
+    multi_az = local.is_production
+    proxy = local.is_production
+    proxy_user = local.is_production ? local.db_username : ""
+    instance_class = local.is_production ? "db.t4g.large" : "db.t4g.micro"
+    performance_insights_retention_period = local.is_production ? 31 : 7
   }
 
   vpc = local.vpc

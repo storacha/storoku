@@ -9,8 +9,13 @@ variable "environment" {
 }
 
 variable "name" {
-  description = "base name of the bucket"
+  description = "base name of the table"
   type        = string
+}
+
+variable "is_production" {
+  description = "Indicates whether production-grade features should be enabled"
+  type        = bool
 }
 
 variable "attributes" {

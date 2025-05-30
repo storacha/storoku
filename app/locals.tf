@@ -1,5 +1,9 @@
 locals {
-  dedicated_resources = var.environment == "prod" || var.environment == "staging"
+  is_production = var.environment == "prod" || var.environment == "warm-prod"
+  is_staging = var.environment == "staging" || var.environment == "warm-staging"
+
+  # Only prod and staging get their own resources. All other envs will share the dev shared infra
+  dedicated_resources = local.is_production || local.is_staging
   kms = local.dedicated_resources ? module.kms[0].kms : data.terraform_remote_state.shared.outputs.dev_kms
   vpc = local.dedicated_resources ? module.vpc[0] : data.terraform_remote_state.shared.outputs.dev_vpc
   buckets = var.buckets 
@@ -7,7 +11,7 @@ locals {
   database = local.dedicated_resources ? var.create_db ? module.databases[0].database : null : try(data.terraform_remote_state.shared.outputs.dev_databases.database, null)
   domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.storacha.network"
   domain = {
-    name = var.environment == "prod" ? local.domain_base : "${var.environment}.${local.domain_base}"
+    name = var.environment == "prod" ? local.domain_base : var.environment == "warm-prod" ? "warm.${local.domain_base}" : var.environment == "warm-staging" ? "staging.warm.${local.domain_base}" : "${var.environment}.${local.domain_base}"
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
   }
   env_vars = concat(var.deployment_env_vars,
@@ -20,7 +24,7 @@ locals {
       value = var.principal_mapping
     }])
   secrets = [ for secret, arn in module.secrets.secrets : { name = secret, valueFrom = arn }]
-  config = var.deployment_config != null ? var.deployment_config : var.environment == "prod" ? {
+  config = var.deployment_config != null ? var.deployment_config : local.is_production ? {
     cpu = 1024
     memory = 2048
     service_min = 1
