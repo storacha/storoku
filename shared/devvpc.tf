@@ -1,6 +1,5 @@
 locals {
-  # Only prod and staging get their own VPC. All other envs will share the dev VPC
-  should_create_shared_vpc = terraform.workspace != "prod" && terraform.workspace != "staging"
+  should_create_shared_vpc = local.shared_resources
 }
 
 module "dev_vpc" {

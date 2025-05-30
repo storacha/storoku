@@ -1,5 +1,6 @@
 locals {
-  dedicated_resources = var.environment == "prod" || var.environment == "staging"
+  # Only prod and staging get their own resources. All other envs will share the dev shared infra
+  dedicated_resources = var.environment == "prod" || var.environment == "staging" || var.environment == "warm-prod" || var.environment == "warm-staging"
   kms = local.dedicated_resources ? module.kms[0].kms : data.terraform_remote_state.shared.outputs.dev_kms
   vpc = local.dedicated_resources ? module.vpc[0] : data.terraform_remote_state.shared.outputs.dev_vpc
   buckets = var.buckets 

@@ -1,6 +1,5 @@
 locals {
-  # Only prod and staging get their own VPC. All other envs will share the dev VPC
-  should_create_vpc = var.environment == "prod" || var.environment == "staging"
+  should_create_vpc = local.dedicated_resources
 }
 
 module "vpc" {

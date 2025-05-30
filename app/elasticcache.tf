@@ -1,6 +1,5 @@
 locals {
-  # Only prod and staging get their own caches. All other envs will share the dev caches
-  should_create_caches = length(var.caches) > 0 && (var.environment == "prod" || var.environment == "staging")
+  should_create_caches = length(var.caches) > 0 && local.dedicated_resources
 }
 
 module "caches" {

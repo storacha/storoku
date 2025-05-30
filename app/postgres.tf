@@ -1,6 +1,5 @@
 locals {
-  # Only prod and staging get their own caches. All other envs will share the dev caches
-    should_create_postgres = var.create_db && (terraform.workspace == "prod" || terraform.workspace == "staging")
+  should_create_postgres = var.create_db && local.dedicated_resources
 }
 
 module "databases" {
