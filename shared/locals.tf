@@ -8,5 +8,5 @@ locals {
   network = local.is_warm ? "warm.storacha.network" : "storacha.network"
   domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.${local.network}"
 
-  vpc = module.dev_vpc[0]
+  vpc = length(module.dev_vpc) > 0 ? module.dev_vpc[0] : null
 }

@@ -15,5 +15,5 @@ output "dev_databases" {
 }
 
 output "dev_kms" {
-  value = module.dev_kms[0].kms
+  value = length(module.dev_kms) > 0 ? module.dev_kms[0].kms : null
 }
