@@ -1,6 +1,3 @@
-locals {
-  domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.storacha.network"
-}
 resource "aws_route53_zone" "primary" {
   name = local.domain_base
 }
