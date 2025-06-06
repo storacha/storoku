@@ -252,6 +252,10 @@ resource "aws_db_instance" "rds" {
   performance_insights_kms_key_id       = aws_kms_key.encryption_rds.arn
   ca_cert_identifier                    = "rds-ca-rsa2048-g1"
   apply_immediately                     = true
+
+  lifecycle {
+    ignore_changes = [engine_version]
+  }
 }
 
 // DB Proxy (if needed)
