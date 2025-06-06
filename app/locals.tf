@@ -11,7 +11,7 @@ locals {
   caches = local.dedicated_resources ? length(var.caches) > 0 ? module.caches[0].caches : {} : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
   database = local.dedicated_resources ? var.create_db ? module.databases[0].database : null : try(data.terraform_remote_state.shared.outputs.dev_databases.database, null)
   network = local.is_warm ? "warm.storacha.network" : "storacha.network"
-  domain_base = (local.is_production && var.domain_base != "") ? var.domain_base : "${var.app}.${local.network}"
+  domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.${local.network}"
   domain = {
     name = local.is_production ? local.domain_base : local.is_staging ? "staging.${local.domain_base}" : "${var.environment}.${local.domain_base}"
     zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
