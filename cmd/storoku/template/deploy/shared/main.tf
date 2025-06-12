@@ -11,7 +11,7 @@ terraform {
   }
   backend "s3" {
     bucket = "storacha-terraform-state"
-   
+    key = "storacha/${var.app}/shared.tfstate"
     region = "us-west-2"
     encrypt = true
   }
