@@ -1,6 +1,6 @@
 locals {
-  is_production = var.environment == "prod" || var.environment == "warm-prod"
-  is_staging = var.environment == "staging" || var.environment == "warm-staging"
+  is_production = var.environment == "prod" || starts_with("prod-", var.environment) || ends_with("-prod", var.environment)
+  is_staging = var.environment == "staging" || starts_with("staging-", var.environment) || ends_with("-staging", var.environment)
 
   # Only prod and staging get their own resources. All other envs will share the dev shared infra
   dedicated_resources = local.is_production || local.is_staging
