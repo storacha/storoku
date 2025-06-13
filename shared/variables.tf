@@ -3,6 +3,12 @@ variable "app" {
   type        = string
 }
 
+variable "networks" {
+  description = "List of networks to create (a default, 'hot' network is always created)"
+  type        = list(string)
+  default     = []
+}
+
 variable "domain_base" {
   description = "base domain after the application"
   type        = string
