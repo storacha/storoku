@@ -4,7 +4,7 @@ module "cert" {
 }
 
 resource "aws_route53_record" "alb" {
-  zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
+  zone_id = data.terraform_remote_state.shared.outputs.route53_zones[var.network].zone_id
   name    = local.domain.name
   type    = "A"
 

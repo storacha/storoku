@@ -1,7 +1,6 @@
 locals {
   is_production = var.environment == "prod" || var.environment == "warm-prod"
   is_staging = var.environment == "staging" || var.environment == "warm-staging"
-  is_warm = startswith(var.environment, "warm-")
 
   # Only prod and staging get their own resources. All other envs will share the dev shared infra
   dedicated_resources = local.is_production || local.is_staging
@@ -10,11 +9,13 @@ locals {
   buckets = var.buckets 
   caches = local.dedicated_resources ? length(var.caches) > 0 ? module.caches[0].caches : {} : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
   database = local.dedicated_resources ? var.create_db ? module.databases[0].database : null : try(data.terraform_remote_state.shared.outputs.dev_databases.database, null)
-  network = local.is_warm ? "warm.storacha.network" : "storacha.network"
-  domain_base = var.domain_base != "" ? var.domain_base : "${var.app}.${local.network}"
+  
+  # Network and domain configuration
+  network_suffix = var.network == "hot" ? "storacha.network" : "${var.network}.storacha.network"
+  domain_base = var.domain_base != "" ? (var.network == "hot" ? var.domain_base : "${var.network}.${var.domain_base}") : "${var.app}.${local.network_suffix}"
   domain = {
     name = local.is_production ? local.domain_base : local.is_staging ? "staging.${local.domain_base}" : "${var.environment}.${local.domain_base}"
-    zone_id = data.terraform_remote_state.shared.outputs.primary_zone.zone_id
+    zone_id = data.terraform_remote_state.shared.outputs.route53_zones[var.network].zone_id
   }
   env_vars = concat(var.deployment_env_vars,
     [{
