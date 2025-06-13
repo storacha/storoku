@@ -69,6 +69,7 @@ func main() {
 			jsCmd,
 			tableCmd,
 			writeToContainerCmd,
+			networkCmd,
 		},
 	}
 	if err := app.Run(ctx, os.Args); err != nil {
@@ -291,6 +292,7 @@ type Config struct {
 	Buckets          []Bucket `json:"buckets"`
 	Secrets          []Secret `json:"secrets"`
 	Tables           []Table  `json:"tables"`
+	Networks         []string `json:"networks"`
 	WriteToContainer bool     `json:"writeToContainer"`
 }
 

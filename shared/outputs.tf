@@ -1,5 +1,6 @@
-output "primary_zone" {
-  value = aws_route53_zone.primary
+# Map of all route53 zones keyed by network name
+output "route53_zones" {
+  value = aws_route53_zone.network
 }
 
 output "dev_vpc" {
