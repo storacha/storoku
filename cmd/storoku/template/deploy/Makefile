@@ -66,10 +66,10 @@ clean-shared:
 clean: clean-terraform clean-shared
 
 app/.terraform:
-	TF_WORKSPACE=default tofu -chdir=app init -backend-config="key=storacha/$(TF_VAR_app)/terraform.tfstate"
+	TF_WORKSPACE=default tofu -chdir=app init
 
 shared/.terraform:
-	TF_WORKSPACE=default tofu -chdir=shared init -backend-config="key=storacha/$(TF_VAR_app)/shared.tfstate"
+	TF_WORKSPACE=default tofu -chdir=shared init
 
 .tfworkspace:
 	tofu -chdir=app workspace new $(TF_WORKSPACE) 
@@ -82,12 +82,12 @@ init: app/.terraform shared/.terraform .tfworkspace
 .PHONY: upgrade-shared
 
 upgrade-shared:
-	TF_WORKSPACE=default tofu -chdir=shared init --upgrade -backend-config="key=storacha/$(TF_VAR_app)/shared.tfstate"
+	TF_WORKSPACE=default tofu -chdir=shared init --upgrade
 
 .PHONY: upgrade-app
 
 upgrade-app: upgrade-shared
-	tofu -chdir=app init -upgrade -backend-config="key=storacha/$(TF_VAR_app)/terraform.tfstate"
+	tofu -chdir=app init -upgrade
 
 .PHONY: upgrade
 upgrade: upgrade-shared upgrade-app
