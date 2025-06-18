@@ -127,27 +127,23 @@ APPLY_ARGS=""
 endif
 
 .PHONY: apply-shared
-
 apply-shared: shared/.terraform
 	TF_WORKSPACE=default tofu -chdir=shared apply $(APPLY_ARGS)
 
 .PHONY: apply-app
-
 apply-app: app/.terraform .tfworkspace docker-push eval_image_tag eval_env_file
 	tofu -chdir=app apply -var="image_tag=$(REPLICATED_IMAGE_TAG)" -var='env_files=["$(ENV_FILE)"]' $(APPLY_ARGS)
 
 .PHONY: apply
-
 apply: apply-shared apply-app
 
 .PHONY: console-shared
-
 console-shared: shared/.terraform
-	TF_WORKSPACE=default tofu -chdir=shared console $(APPLY_ARGS)
+	TF_WORKSPACE=default tofu -chdir=shared console
 
-.PHONY: console-app
+.PHONY: console
 console: app/.terraform .tfworkspace eval_image_tag eval_env_file
-	tofu -chdir=app console -var="image_tag=$(REPLICATED_IMAGE_TAG)" -var='env_files=["$(ENV_FILE)"]' $(APPLY_ARGS)
+	tofu -chdir=app console -var="image_tag=$(REPLICATED_IMAGE_TAG)" -var='env_files=["$(ENV_FILE)"]'
 
 .PHONY: wait-deploy
 wait-deploy:
