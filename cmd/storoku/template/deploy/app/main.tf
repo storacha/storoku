@@ -76,8 +76,8 @@ module "app" {
       fifo = {{ .Fifo }}
     },
   {{end}}]
-  caches = [ {{range .Caches}}"{{.}}",{{end}} ]
-  topics = [ {{range .Topics}}"{{.}}",{{end}} ]
+  caches = [{{range .Caches}}"{{.}}",{{end}}]
+  topics = [{{range .Topics}}"{{.}}",{{end}}]
   tables = [{{range .Tables}}
     {
       name = "{{.Name}}"
