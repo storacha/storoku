@@ -35,7 +35,8 @@ provider "aws" {
 module "shared" {
   source = "github.com/storacha/storoku//shared?ref={{.Version}}"
   create_db = {{.CreateDB}}
-  caches = [ {{range .Caches}}"{{.}}",{{end}} ]
+  caches = [{{range .Caches}}"{{.}}",{{end}}]
+  networks = [{{range .Networks}}"{{.}}",{{end}}]
   app = var.app
   zone_id = {{if .Cloudflare}}var.cloudflare_zone_id{{else}}""{{end}}
   domain_base = var.domain_base

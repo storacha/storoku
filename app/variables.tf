@@ -149,6 +149,12 @@ variable "domain_base" {
   default = ""
 }
 
+variable "network" {
+  description = "The network to use (defaults to the default 'hot' network)"
+  type        = string
+  default     = "hot"
+}
+
 variable "write_to_container" {
   description = "whether applications can write to the container file system"
   type = bool

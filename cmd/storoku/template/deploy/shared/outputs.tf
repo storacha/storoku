@@ -1,5 +1,5 @@
-output "primary_zone" {
-  value = module.shared.primary_zone
+output "route53_zones" {
+  value = module.shared.route53_zones
 }
 
 output "dev_vpc" {

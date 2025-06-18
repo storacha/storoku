@@ -58,6 +58,7 @@ module "app" {
   appState = var.app
   write_to_container = {{.WriteToContainer}}
   environment = terraform.workspace
+  network = var.network
   # if there are any env vars you want available only to your container
   # in the vpc as opposed to set in the dockerfile, enter them here
   # NOTE: do not put sensitive data in env-vars. use secrets
@@ -76,8 +77,8 @@ module "app" {
       fifo = {{ .Fifo }}
     },
   {{end}}]
-  caches = [ {{range .Caches}}"{{.}}",{{end}} ]
-  topics = [ {{range .Topics}}"{{.}}",{{end}} ]
+  caches = [{{range .Caches}}"{{.}}",{{end}}]
+  topics = [{{range .Topics}}"{{.}}",{{end}}]
   tables = [{{range .Tables}}
     {
       name = "{{.Name}}"
