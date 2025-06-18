@@ -109,7 +109,7 @@ validate: validate-shared validate-app
 .PHONY: plan-shared
 
 plan-shared: shared/.terraform
-	tofu -chdir=shared plan
+	TF_WORKSPACE=default tofu -chdir=shared plan
 
 .PHONY: plan-app
 
