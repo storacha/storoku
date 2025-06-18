@@ -22,5 +22,5 @@ resource "cloudflare_dns_record" "ns" {
   type    = "NS"
   ttl     = 1
 
-  depends_on = [aws_route53_zone.network[each.value.network]]
+  depends_on = [aws_route53_zone.network]
 }
