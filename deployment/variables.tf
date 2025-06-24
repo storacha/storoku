@@ -128,6 +128,10 @@ variable "caches" {
   }))
 }
 
+variable "cache_user_id" {
+  type = string
+}
+
 variable "buckets" {
   type = map(object({
     arn = string

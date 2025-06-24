@@ -53,6 +53,12 @@ resource "aws_ecs_task_definition" "app" {
           name = "${upper(key)}_CACHE_URL"
           value = "${cache.address}:${cache.port}"
         }],
+        length(var.caches) > 0 ? [
+          {
+            name = "CACHE_USER_ID"
+            value = var.cache_user_id
+          }
+        ] : [],
         var.create_db ? [
           {
             name = "PGHOST"
