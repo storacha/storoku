@@ -140,6 +140,7 @@ variable "buckets" {
   type = map(object({
     arn = string
     bucket = string
+    regional_domain_name = string
   }))
 }
 

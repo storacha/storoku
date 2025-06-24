@@ -93,6 +93,10 @@ resource "aws_ecs_task_definition" "app" {
           name = "${upper(key)}_BUCKET_NAME"
           value = bucket.bucket
         }],
+        [ for key, bucket in var.buckets : {
+          name = "${upper(key)}_BUCKET_REGIONAL_DOMAIN"
+          value = bucket.regional_domain_name
+        }],
         [ for key, queue in var.queues : {
           name = "${upper(key)}_QUEUE_ID"
           value = queue.id
