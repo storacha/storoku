@@ -8,6 +8,10 @@ variable "environment" {
   type        = string
 }
 
+variable "public_url" {
+  type = string
+}
+
 variable "kms" {
   description = "id of a KMS key used to encrypt"
   type = object({

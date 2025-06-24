@@ -45,6 +45,10 @@ resource "aws_ecs_task_definition" "app" {
         startPeriod = 10
       } : null
       environment = concat(var.env_vars,
+        [{
+            name = "PUBLIC_URL"
+            value = var.public_url
+        }],
         [for key, cache in var.caches : {
           name = "${upper(key)}_CACHE_ID"
           value = cache.id
