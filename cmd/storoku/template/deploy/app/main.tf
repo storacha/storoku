@@ -98,8 +98,8 @@ module "app" {
       name = "{{ .Name }}"
       public = {{ .Public }}
       object_expiration_days = {{ .ObjectExpirationDays }}
-    },
-  {{end}}]
+    },{{end}}
+  ]
   providers = {
     aws = aws
     aws.acm = aws.acm
