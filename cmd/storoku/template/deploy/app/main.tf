@@ -97,6 +97,7 @@ module "app" {
     {
       name = "{{ .Name }}"
       public = {{ .Public }}
+      object_expiration_days = {{ .ObjectExpirationDays }}
     },
   {{end}}]
   providers = {

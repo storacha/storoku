@@ -336,8 +336,9 @@ type Queue struct {
 }
 
 type Bucket struct {
-	Name   string `json:"name"`
-	Public bool   `json:"public"`
+	Name                 string `json:"name"`
+	Public               bool   `json:"public"`
+	ObjectExpirationDays int    `json:"objectExpirationDays,omitempty"`
 }
 
 type Secret struct {

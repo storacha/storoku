@@ -29,6 +29,11 @@ var bucketAddCmd = &cli.Command{
 			Value:       false,
 			DefaultText: "specify if the bucket will be public",
 		},
+		&cli.IntFlag{
+			Name:        "object-expiration-days",
+			Value:       0,
+			DefaultText: "number of days after which objects will expire (0 = no expiration, min: 1, max: 2147483647)",
+		},
 	},
 	Action: modifyAndRegenerate(func(ctx context.Context, cmd *cli.Command, c *Config) error {
 		bucketName := cmd.StringArg("bucket")
@@ -41,9 +46,17 @@ var bucketAddCmd = &cli.Command{
 			}
 		}
 		public := cmd.Bool("public")
+		expirationDays := cmd.Int("object-expiration-days")
+
+		// Validate expiration days
+		if expirationDays < 0 || expirationDays > 2147483647 {
+			return errors.New("object-expiration-days must be 0 (no expiration) or between 1 and 2147483647 days")
+		}
+
 		c.Buckets = append(c.Buckets, Bucket{
-			Name:   bucketName,
-			Public: public,
+			Name:                 bucketName,
+			Public:               public,
+			ObjectExpirationDays: expirationDays,
 		})
 		return nil
 	}),
