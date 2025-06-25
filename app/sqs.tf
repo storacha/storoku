@@ -5,4 +5,5 @@ module "queues" {
   environment = var.environment
   name = each.key
   fifo = each.value.fifo
+  message_retention_seconds = each.value.message_retention_seconds
 }

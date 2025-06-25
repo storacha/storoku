@@ -330,8 +330,9 @@ func (c CompiledJS) AsTask() string {
 }
 
 type Queue struct {
-	Name string `json:"name"`
-	Fifo bool   `json:"fifo"`
+	Name                    string `json:"name"`
+	Fifo                    bool   `json:"fifo"`
+	MessageRetentionSeconds int    `json:"messageRetentionSeconds,omitempty"`
 }
 
 type Bucket struct {

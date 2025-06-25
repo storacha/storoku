@@ -75,6 +75,7 @@ module "app" {
     {
       name = "{{ .Name }}"
       fifo = {{ .Fifo }}
+      message_retention_seconds = {{ .MessageRetentionSeconds }}
     },
   {{end}}]
   caches = [{{range .Caches}}"{{.}}",{{end}}]
