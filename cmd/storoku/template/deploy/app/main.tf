@@ -74,8 +74,8 @@ module "app" {
   queues = [{{range .Queues}}
     {
       name = "{{ .Name }}"
-      fifo = {{ .Fifo }}
-      message_retention_seconds = {{ .MessageRetentionSeconds }}
+      fifo = {{ .Fifo }}{{if .MessageRetentionSeconds}}
+      message_retention_seconds = {{ .MessageRetentionSeconds }}{{end}}
     },
   {{end}}]
   caches = [{{range .Caches}}"{{.}}",{{end}}]
