@@ -72,6 +72,7 @@ variable "queues" {
   type = list(object({
     name = string
     fifo = optional(bool, false)
+    message_retention_seconds = optional(number, 0)
   }))
   default = []
 }
