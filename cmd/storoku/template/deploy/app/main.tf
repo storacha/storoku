@@ -96,8 +96,8 @@ module "app" {
   buckets = [{{range .Buckets}}
     {
       name = "{{ .Name }}"
-      public = {{ .Public }}
-      object_expiration_days = {{ .ObjectExpirationDays }}
+      public = {{ .Public }}{{ if .ObjectExpirationDays }}
+      object_expiration_days = {{ .ObjectExpirationDays }}{{end}}
     },{{end}}
   ]
   providers = {
