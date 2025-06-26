@@ -44,3 +44,17 @@ resource "aws_s3_bucket_policy" "policy" {
     ]
   })
 }
+
+resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
+  count  = var.object_expiration_days > 0 ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    id     = "${var.environment}-${var.app}-${var.name}-expire-all-rule"
+    status = "Enabled"
+
+    expiration {
+      days = var.object_expiration_days
+    }
+  }
+}

@@ -96,9 +96,10 @@ module "app" {
   buckets = [{{range .Buckets}}
     {
       name = "{{ .Name }}"
-      public = {{ .Public }}
-    },
-  {{end}}]
+      public = {{ .Public }}{{ if .ObjectExpirationDays }}
+      object_expiration_days = {{ .ObjectExpirationDays }}{{end}}
+    },{{end}}
+  ]
   providers = {
     aws = aws
     aws.acm = aws.acm

@@ -63,6 +63,7 @@ variable "buckets" {
   type = list(object({
     name = string
     public = optional(bool, false)
+    object_expiration_days = optional(number, 0)
   }))
   default = []
 }

@@ -5,4 +5,5 @@ module "buckets" {
   environment = var.environment
   name = each.key
   public = each.value.public
+  object_expiration_days = each.value.object_expiration_days
 }
