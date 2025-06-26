@@ -8,6 +8,7 @@ locals {
   vpc = local.dedicated_resources ? module.vpc[0] : data.terraform_remote_state.shared.outputs.dev_vpc
   buckets = var.buckets 
   caches = local.dedicated_resources ? length(var.caches) > 0 ? module.caches[0].caches : {} : try(data.terraform_remote_state.shared.outputs.dev_caches.caches, {})
+  cache_user_id = local.dedicated_resources ? length(var.caches) > 0 ? module.caches[0].iam_user.user_id : "" : try(data.terraform_remote_state.shared.outputs.dev_caches.iam_user.user_id, "")
   database = local.dedicated_resources ? var.create_db ? module.databases[0].database : null : try(data.terraform_remote_state.shared.outputs.dev_databases.database, null)
   
   # Network and domain configuration

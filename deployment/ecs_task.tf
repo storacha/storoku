@@ -45,6 +45,10 @@ resource "aws_ecs_task_definition" "app" {
         startPeriod = 10
       } : null
       environment = concat(var.env_vars,
+        [{
+            name = "PUBLIC_URL"
+            value = var.public_url
+        }],
         [for key, cache in var.caches : {
           name = "${upper(key)}_CACHE_ID"
           value = cache.id
@@ -53,6 +57,12 @@ resource "aws_ecs_task_definition" "app" {
           name = "${upper(key)}_CACHE_URL"
           value = "${cache.address}:${cache.port}"
         }],
+        length(var.caches) > 0 ? [
+          {
+            name = "CACHE_USER_ID"
+            value = var.cache_user_id
+          }
+        ] : [],
         var.create_db ? [
           {
             name = "PGHOST"
@@ -82,6 +92,10 @@ resource "aws_ecs_task_definition" "app" {
         [ for key, bucket in var.buckets : {
           name = "${upper(key)}_BUCKET_NAME"
           value = bucket.bucket
+        }],
+        [ for key, bucket in var.buckets : {
+          name = "${upper(key)}_BUCKET_REGIONAL_DOMAIN"
+          value = bucket.regional_domain_name
         }],
         [ for key, queue in var.queues : {
           name = "${upper(key)}_QUEUE_ID"

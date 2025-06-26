@@ -7,6 +7,7 @@ module "deployment" {
   lb_security_group = module.ecs_infra.lb_security_group
   app = var.app
   environment = var.environment
+  public_url = local.domain.name
   env_vars = local.env_vars
   ecs_cluster = module.ecs_infra.ecs_cluster
   kms = local.kms
@@ -23,6 +24,7 @@ module "deployment" {
     database = local.db_database
   }
   caches = local.caches
+  cache_user_id = local.cache_user_id
   queues = module.queues
   tables = module.tables
   topics = module.topics
