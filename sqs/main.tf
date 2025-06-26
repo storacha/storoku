@@ -4,6 +4,7 @@ resource "aws_sqs_queue" "queue" {
   fifo_queue = var.fifo
   content_based_deduplication = var.fifo ? true : null
   visibility_timeout_seconds = !var.fifo ? 300 : null
+  message_retention_seconds = var.message_retention_seconds > 0 ? var.message_retention_seconds : null
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.queue_deadletter.arn
     maxReceiveCount     = 4
