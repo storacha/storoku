@@ -9,6 +9,11 @@ module "dev_caches" {
 
   app = var.app
   environment = "dev"
+
+  providers = {
+    aws = aws.dev
+  }
+
   node_type = "cache.t4g.micro" # 2 vCPUs, 0.5 GiB memory, 5 Gigabit network, $0.0128/hour
   caches = var.caches
 

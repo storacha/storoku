@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.86.0"
+      configuration_aliases = [ aws.dev ]
+    }
+  }
+}
+
 # Create a route53 zone for each network
 resource "aws_route53_zone" "network" {
   for_each = local.all_networks
