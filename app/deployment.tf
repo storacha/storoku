@@ -7,7 +7,7 @@ module "deployment" {
   lb_security_group = module.ecs_infra.lb_security_group
   app = var.app
   environment = var.environment
-  public_url = local.domain.name
+  public_url = "https://${local.domain.name}"
   env_vars = local.env_vars
   ecs_cluster = module.ecs_infra.ecs_cluster
   kms = local.kms
