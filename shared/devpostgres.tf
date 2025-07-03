@@ -10,6 +10,10 @@ module "dev_postgres" {
   app = var.app
   environment = "dev"
 
+  providers = {
+    aws = aws.dev
+  }
+
   db_config = {
     allocated_storage = 20
     multi_az = false

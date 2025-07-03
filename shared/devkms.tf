@@ -9,4 +9,8 @@ module "dev_kms" {
 
   app = var.app
   environment = "dev"
+
+  providers = {
+    aws = aws.dev
+  }
 }
