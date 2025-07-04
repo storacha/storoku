@@ -24,7 +24,7 @@ module "deployment" {
     database = local.db_database
   }
   caches = local.caches
-  cache_user_id = local.cache_user_id
+  cache_user = local.cache_user
   queues = module.queues
   tables = module.tables
   topics = module.topics
