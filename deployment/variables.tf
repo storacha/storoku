@@ -132,8 +132,11 @@ variable "caches" {
   }))
 }
 
-variable "cache_user_id" {
-  type = string
+variable "cache_user" {
+  type = object({
+    arn     = string
+    user_id = string
+  })
 }
 
 variable "buckets" {

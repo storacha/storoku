@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "app" {
         length(var.caches) > 0 ? [
           {
             name = "CACHE_USER_ID"
-            value = var.cache_user_id
+            value = var.cache_user.user_id
           }
         ] : [],
         var.create_db ? [
@@ -246,7 +246,10 @@ data "aws_iam_policy_document" "task_elasticache_connect_document" {
       "elasticache:Connect"
     ]
 
-    resources = [for cache in var.caches : cache.arn]
+    resources = concat(
+      [for cache in var.caches : cache.arn],
+      [var.cache_user.arn]
+    )
   }
 }
 
