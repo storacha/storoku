@@ -6,7 +6,7 @@ resource "aws_kms_key" "cache_key" {
 resource "aws_elasticache_replication_group" "cache" {
   for_each = var.caches
 
-  replication_group_id = "${var.environment}-${var.app}-${each.key}-cache"
+  replication_group_id = "new-${var.environment}-${var.app}-${each.key}-cache"
   description          = "${var.environment} ${var.app} ${each.key} cache cluster"
 
   engine               = "valkey"
@@ -113,6 +113,6 @@ resource "aws_security_group" "cache_security_group" {
 }
 
 resource "aws_elasticache_subnet_group" "cache_subnet_group" {
-  name       = "${var.environment}-${var.app}-cache-subnet-group"
+  name       = "new-${var.environment}-${var.app}-cache-subnet-group"
   subnet_ids = var.vpc.subnet_ids.elasticache
 }
