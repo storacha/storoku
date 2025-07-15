@@ -50,11 +50,11 @@ resource "aws_ecs_task_definition" "app" {
             value = var.public_url
         }],
         [for key, cache in var.caches : {
-          name = "${replace(upper(key), "-", "_")}_CACHE_ID"
+          name = "${replace(upper(trimsuffix(key, "-cache")), "-", "_")}_CACHE_ID"
           value = cache.id
         }],
         [for key, cache in var.caches : {
-          name = "${replace(upper(key), "-", "_")}_CACHE_URL"
+          name = "${replace(upper(trimsuffix(key, "-cache")), "-", "_")}_CACHE_URL"
           value = "${cache.address}:${cache.port}"
         }],
         length(var.caches) > 0 ? [
@@ -90,23 +90,23 @@ resource "aws_ecs_task_definition" "app" {
           }
         ] : [],
         [ for key, bucket in var.buckets : {
-          name = "${replace(upper(key), "-", "_")}_BUCKET_NAME"
+          name = "${replace(upper(trimsuffix(key, "-bucket")), "-", "_")}_BUCKET_NAME"
           value = bucket.bucket
         }],
         [ for key, bucket in var.buckets : {
-          name = "${replace(upper(key), "-", "_")}_BUCKET_REGIONAL_DOMAIN"
+          name = "${replace(upper(trimsuffix(key, "-bucket")), "-", "_")}_BUCKET_REGIONAL_DOMAIN"
           value = bucket.regional_domain_name
         }],
         [ for key, queue in var.queues : {
-          name = "${replace(upper(key), "-", "_")}_QUEUE_ID"
+          name = "${replace(upper(trimsuffix(key, "-queue")), "-", "_")}_QUEUE_ID"
           value = queue.id
         }],
         [ for key, table in var.tables : {
-          name = "${replace(upper(key), "-", "_")}_TABLE_ID"
+          name = "${replace(upper(trimsuffix(key, "-table")), "-", "_")}_TABLE_ID"
           value = table.id
         }],
         [ for key, topic in var.topics : {
-          name = "${replace(upper(key), "-", "_")}_TOPIC_ID"
+          name = "${replace(upper(trimsuffix(key, "-topic")), "-", "_")}_TOPIC_ID"
           value = topic.id
         }]
       ),
