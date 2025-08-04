@@ -6,7 +6,7 @@ resource "aws_kms_key" "cache_key" {
 resource "aws_elasticache_replication_group" "cache" {
   for_each = var.caches
 
-  replication_group_id = "${var.environment}-${var.app}-${each.key}-cache"
+  replication_group_id = "${var.environment}-${var.app}-${each.key}"
   description          = "${var.environment} ${var.app} ${each.key} cache cluster"
 
   engine               = "valkey"
@@ -87,8 +87,8 @@ resource "aws_elasticache_user" "cache_default_user" {
 }
 
 resource "aws_elasticache_user" "cache_iam_user" {
-  user_id       = "${var.environment}-${var.app}-cache-iam-user"
-  user_name     = "${var.environment}-${var.app}-cache-iam-user"
+  user_id       = "${var.environment}-${var.app}-iam"
+  user_name     = "${var.environment}-${var.app}-iam"
   access_string = "on ~* +@all"
   
   authentication_mode {
@@ -99,7 +99,7 @@ resource "aws_elasticache_user" "cache_iam_user" {
 }
 
 resource "aws_security_group" "cache_security_group" {
-  name        = "${var.environment}-${var.app}-cache-security-group"
+  name        = "${var.environment}-${var.app}-cache"
   description = "Security group for VPC access to redis"
   vpc_id      = var.vpc.id
   
@@ -113,6 +113,6 @@ resource "aws_security_group" "cache_security_group" {
 }
 
 resource "aws_elasticache_subnet_group" "cache_subnet_group" {
-  name       = "${var.environment}-${var.app}-cache-subnet-group"
+  name       = "${var.environment}-${var.app}-cache"
   subnet_ids = var.vpc.subnet_ids.elasticache
 }
