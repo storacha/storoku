@@ -1,9 +1,9 @@
 locals {
-  should_create_shared_vpc = local.shared_resources
+  should_create_dev_vpc = var.create_dev_resources
 }
 
 module "dev_vpc" {
-  count = local.should_create_shared_vpc ? 1 : 0
+  count = local.should_create_dev_vpc ? 1 : 0
   
   source = "../vpc"
 
