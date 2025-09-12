@@ -134,8 +134,8 @@ variable "caches" {
 
 variable "cache_user" {
   type = object({
-    arn     = string
-    user_id = string
+    arn     = optional(string)
+    user_id = optional(string)
   })
 }
 
