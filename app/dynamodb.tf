@@ -9,4 +9,6 @@ module "tables" {
   attributes = each.value.attributes
   hash_key = each.value.hash_key
   range_key = each.value.range_key
+  global_secondary_indexes = each.value.global_secondary_indexes
+  local_secondary_indexes = each.value.local_secondary_indexes
 }

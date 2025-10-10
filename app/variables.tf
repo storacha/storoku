@@ -88,6 +88,19 @@ variable "tables" {
     }))
     hash_key = string
     range_key = optional(string)
+    global_secondary_indexes = optional(list(object({
+      name = string
+      hash_key = string
+      range_key = optional(string)
+      projection_type = string
+      non_key_attributes = optional(list(string))
+    })), [])
+    local_secondary_indexes = optional(list(object({
+      name = string
+      range_key = string
+      projection_type = string
+      non_key_attributes = optional(list(string))
+    })), [])
   }))
   default = []
 }
