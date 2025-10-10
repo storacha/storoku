@@ -358,12 +358,12 @@ func (s Secret) LowerKebab() string {
 }
 
 type Table struct {
-	Name                   string                      `json:"name"`
-	Attributes             []Attribute                 `json:"attributes"`
-	HashKey                string                      `json:"hashKey"`
-	RangeKey               string                      `json:"rangeKey"`
-	GlobalSecondaryIndexes map[string]SecondaryIndex   `json:"globalSecondaryIndexes,omitempty"`
-	LocalSecondaryIndexes  map[string]SecondaryIndex   `json:"localSecondaryIndexes,omitempty"`
+	Name                   string                    `json:"name"`
+	Attributes             []Attribute               `json:"attributes"`
+	HashKey                string                    `json:"hashKey"`
+	RangeKey               string                    `json:"rangeKey"`
+	GlobalSecondaryIndexes map[string]SecondaryIndex `json:"globalSecondaryIndexes,omitempty"`
+	LocalSecondaryIndexes  map[string]SecondaryIndex `json:"localSecondaryIndexes,omitempty"`
 }
 
 type Attribute struct {
