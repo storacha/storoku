@@ -89,7 +89,24 @@ module "app" {
         },{{end}}
       ]
       hash_key = "{{.HashKey}}"{{if .RangeKey }}
-      range_key ="{{.RangeKey}}"{{end}}
+      range_key ="{{.RangeKey}}"{{end}}{{if .GlobalSecondaryIndexes}}
+      global_secondary_indexes = [{{range $name, $gsi := .GlobalSecondaryIndexes}}
+        {
+          name = "{{$gsi.Name}}"
+          hash_key = "{{$gsi.HashKey}}"{{if $gsi.RangeKey}}
+          range_key = "{{$gsi.RangeKey}}"{{end}}
+          projection_type = "{{$gsi.ProjectionType}}"{{if $gsi.NonKeyAttributes}}
+          non_key_attributes = [{{range $gsi.NonKeyAttributes}}"{{.}}",{{end}}]{{end}}
+        },{{end}}
+      ]{{end}}{{if .LocalSecondaryIndexes}}
+      local_secondary_indexes = [{{range $name, $lsi := .LocalSecondaryIndexes}}
+        {
+          name = "{{$lsi.Name}}"
+          range_key = "{{$lsi.RangeKey}}"
+          projection_type = "{{$lsi.ProjectionType}}"{{if $lsi.NonKeyAttributes}}
+          non_key_attributes = [{{range $lsi.NonKeyAttributes}}"{{.}}",{{end}}]{{end}}
+        },{{end}}
+      ]{{end}}
     },{{end}}
   ]
   buckets = [{{range .Buckets}}

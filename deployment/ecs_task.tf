@@ -105,6 +105,22 @@ resource "aws_ecs_task_definition" "app" {
           name = "${trimsuffix(replace(upper(key), "-", "_"), "_TABLE")}_TABLE_ID"
           value = table.id
         }],
+        flatten([
+          for table_key, table in var.tables : [
+            for gsi in table.global_secondary_indexes : {
+              name = "${trimsuffix(replace(upper(table_key), "-", "_"), "_TABLE")}_${trimsuffix(replace(upper(gsi.name), "-", "_"), "_INDEX")}_INDEX_NAME"
+              value = gsi.name
+            }
+          ]
+        ]),
+        flatten([
+          for table_key, table in var.tables : [
+            for lsi in table.local_secondary_indexes : {
+              name = "${trimsuffix(replace(upper(table_key), "-", "_"), "_TABLE")}_${trimsuffix(replace(upper(lsi.name), "-", "_"), "_INDEX")}_INDEX_NAME"
+              value = lsi.name
+            }
+          ]
+        ]),
         [ for key, topic in var.topics : {
           name = "${trimsuffix(replace(upper(key), "-", "_"), "_TOPIC")}_TOPIC_ID"
           value = topic.id
