@@ -58,7 +58,7 @@ module "shared" {
   caches = [{{range .Caches}}"{{.}}",{{end}}]
   networks = [{{range .Networks}}"{{.}}",{{end}}]
   app = var.app
-  create_dev_resources = var.create_dev_resources
+  create_shared_dev_resources = var.create_shared_dev_resources
   zone_id = {{if .Cloudflare}}var.cloudflare_zone_id{{else}}""{{end}}
   domain_base = var.domain_base
   setup_cloudflare = {{.Cloudflare}}

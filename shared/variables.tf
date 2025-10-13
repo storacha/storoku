@@ -32,7 +32,7 @@ variable "caches" {
   default = []
 }
 
-variable "create_dev_resources" {
+variable "create_shared_dev_resources" {
   description = "create shared resources (vpc, caches, db, kms) for dev environments"
   type = bool
   default = false

@@ -1,5 +1,5 @@
 locals {
-  should_create_dev_caches = var.create_dev_resources && length(var.caches) > 0
+  should_create_dev_caches = var.create_shared_dev_resources && length(var.caches) > 0
 }
 
 module "dev_caches" {

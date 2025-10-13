@@ -1,5 +1,5 @@
 locals {
-  should_create_dev_vpc = var.create_dev_resources
+  should_create_dev_vpc = var.create_shared_dev_resources
 }
 
 module "dev_vpc" {

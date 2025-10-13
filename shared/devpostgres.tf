@@ -1,5 +1,5 @@
 locals {
-  should_create_dev_postgres = var.create_dev_resources && var.create_db
+  should_create_dev_postgres = var.create_shared_dev_resources && var.create_db
 }
 
 module "dev_postgres" {

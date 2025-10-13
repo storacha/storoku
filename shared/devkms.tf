@@ -1,5 +1,5 @@
 locals {
-  should_create_dev_kms = var.create_dev_resources
+  should_create_dev_kms = var.create_shared_dev_resources
 }
 
 module "dev_kms" {

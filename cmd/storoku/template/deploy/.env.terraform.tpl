@@ -2,7 +2,7 @@
 TF_WORKSPACE= # your name here
 TF_VAR_app={{ .App }}{{if .DomainBase}}
 TF_VAR_network= # optional, if the deployments targets a network different from the default specify it here
-TF_VAR_create_dev_resources= # optional, set to true if the target env is a development environment (i.e. not a production or staging environment)
+TF_VAR_create_shared_dev_resources= # optional, set to true if the target env is a development environment (i.e. not a production or staging environment)
 TF_VAR_domain_base={{.DomainBase}}{{end}}
 TF_VAR_did= # did for your env
 TF_VAR_private_key= # private_key or your env -- do not commit to repo!
