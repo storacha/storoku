@@ -134,6 +134,7 @@ variable "caches" {
 
 variable "cache_user" {
   type = object({
+    # cache_user might not be set if caches are not being created
     arn     = optional(string)
     user_id = optional(string)
   })
