@@ -49,14 +49,16 @@ resource "aws_ecs_task_definition" "app" {
             name = "PUBLIC_URL"
             value = var.public_url
         }],
-        [for key, cache in var.caches : {
-          name = "${trimsuffix(replace(upper(key), "-", "_"), "_CACHE")}_CACHE_ID"
-          value = cache.id
-        }],
-        [for key, cache in var.caches : {
-          name = "${trimsuffix(replace(upper(key), "-", "_"), "_CACHE")}_CACHE_URL"
-          value = "${cache.address}:${cache.port}"
-        }],
+        flatten([for key, cache in var.caches : [
+          {
+            name = "${trimsuffix(replace(upper(key), "-", "_"), "_CACHE")}_CACHE_ID"
+            value = cache.id
+          },
+          {
+            name = "${trimsuffix(replace(upper(key), "-", "_"), "_CACHE")}_CACHE_URL"
+            value = "${cache.address}:${cache.port}"
+          }
+        ]]),
         length(var.caches) > 0 ? [
           {
             name = "CACHE_USER_ID"
@@ -89,38 +91,32 @@ resource "aws_ecs_task_definition" "app" {
             value = "require"
           }
         ] : [],
-        [ for key, bucket in var.buckets : {
-          name = "${trimsuffix(replace(upper(key), "-", "_"), "_BUCKET")}_BUCKET_NAME"
-          value = bucket.bucket
-        }],
-        [ for key, bucket in var.buckets : {
-          name = "${trimsuffix(replace(upper(key), "-", "_"), "_BUCKET")}_BUCKET_REGIONAL_DOMAIN"
-          value = bucket.regional_domain_name
-        }],
+        flatten([for key, bucket in var.buckets : [
+          {
+            name = "${trimsuffix(replace(upper(key), "-", "_"), "_BUCKET")}_BUCKET_NAME"
+            value = bucket.bucket
+          },
+          {
+            name = "${trimsuffix(replace(upper(key), "-", "_"), "_BUCKET")}_BUCKET_REGIONAL_DOMAIN"
+            value = bucket.regional_domain_name
+          }
+        ]]),
         [ for key, queue in var.queues : {
           name = "${trimsuffix(replace(upper(key), "-", "_"), "_QUEUE")}_QUEUE_ID"
           value = queue.id
         }],
-        [ for key, table in var.tables : {
-          name = "${trimsuffix(replace(upper(key), "-", "_"), "_TABLE")}_TABLE_ID"
-          value = table.id
-        }],
-        flatten([
-          for table_key, table in var.tables : [
-            for gsi in table.global_secondary_indexes : {
-              name = "${trimsuffix(replace(upper(table_key), "-", "_"), "_TABLE")}_${trimsuffix(replace(upper(gsi.name), "-", "_"), "_INDEX")}_INDEX_NAME"
-              value = gsi.name
+        flatten([for key, table in var.tables : [
+          {
+            name = "${trimsuffix(replace(upper(key), "-", "_"), "_TABLE")}_TABLE_ID"
+            value = table.id
+          },
+          [for idx in concat(table.global_secondary_indexes, table.local_secondary_indexes) :
+            {
+              name = "${trimsuffix(replace(upper(key), "-", "_"), "_TABLE")}_${trimsuffix(replace(upper(idx.name), "-", "_"), "_INDEX")}_INDEX_NAME"
+              value = idx.name
             }
           ]
-        ]),
-        flatten([
-          for table_key, table in var.tables : [
-            for lsi in table.local_secondary_indexes : {
-              name = "${trimsuffix(replace(upper(table_key), "-", "_"), "_TABLE")}_${trimsuffix(replace(upper(lsi.name), "-", "_"), "_INDEX")}_INDEX_NAME"
-              value = lsi.name
-            }
-          ]
-        ]),
+        ]]),
         [ for key, topic in var.topics : {
           name = "${trimsuffix(replace(upper(key), "-", "_"), "_TOPIC")}_TOPIC_ID"
           value = topic.id
@@ -299,7 +295,14 @@ data "aws_iam_policy_document" "task_dynamodb_put_get_document" {
       "dynamodb:DeleteItem",
       "dynamodb:DescribeTable",
     ]
-    resources = [for k, table in var.tables : table.arn]
+    resources = flatten([
+      # grant access to the table itself and its indexes
+      for table in var.tables : [
+        table.arn, 
+        [for gsi in table.global_secondary_indexes : "${table.arn}/index/${gsi.name}"],
+        [for lsi in table.local_secondary_indexes : "${table.arn}/index/${lsi.name}"]
+      ]
+    ])
   }
 }
 
