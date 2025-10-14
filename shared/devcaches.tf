@@ -1,9 +1,9 @@
 locals {
-  should_create_shared_caches = length(var.caches) > 0 && local.shared_resources
+  should_create_dev_caches = var.create_shared_dev_resources && length(var.caches) > 0
 }
 
 module "dev_caches" {
-  count = local.should_create_shared_caches ? 1 : 0
+  count = local.should_create_dev_caches ? 1 : 0
 
   source = "../elasticaches"
 

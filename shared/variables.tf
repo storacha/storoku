@@ -32,6 +32,12 @@ variable "caches" {
   default = []
 }
 
+variable "create_shared_dev_resources" {
+  description = "create shared resources (vpc, caches, db, kms) for dev environments"
+  type = bool
+  default = false
+}
+
 variable "zone_id" {
   description = "cloudflare zone id for NS records"
   type = string

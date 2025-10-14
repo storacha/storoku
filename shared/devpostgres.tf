@@ -1,9 +1,9 @@
 locals {
-  should_create_shared_postgres = var.create_db && local.shared_resources
+  should_create_dev_postgres = var.create_shared_dev_resources && var.create_db
 }
 
 module "dev_postgres" {
-  count = local.should_create_shared_postgres ? 1 : 0
+  count = local.should_create_dev_postgres ? 1 : 0
 
   source = "../postgres"
 
