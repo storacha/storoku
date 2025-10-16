@@ -73,7 +73,8 @@ module "app" {
   queues = [{{range .Queues}}
     {
       name = "{{ .Name }}"
-      fifo = {{ .Fifo }}{{if .MessageRetentionSeconds}}
+      fifo = {{ .Fifo }}
+      high_throughput = {{ .HighThroughput }}{{if .MessageRetentionSeconds}}
       message_retention_seconds = {{ .MessageRetentionSeconds }}{{end}}
     },
   {{end}}]

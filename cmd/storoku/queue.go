@@ -29,6 +29,11 @@ var queueAddCmd = &cli.Command{
 			Value:       false,
 			DefaultText: "specify if the queue will be fifo",
 		},
+		&cli.BoolFlag{
+			Name:        "high-throughput",
+			Value:       false,
+			DefaultText: "specify if the queue will be high throughput (only valid for fifo queues)",
+		},
 		&cli.IntFlag{
 			Name:        "msg-retention-seconds",
 			Value:       0,
@@ -47,6 +52,12 @@ var queueAddCmd = &cli.Command{
 		}
 		fifo := cmd.Bool("fifo")
 		retention := cmd.Int("msg-retention-seconds")
+		highThroughput := cmd.Bool("high-throughput")
+
+		// Validate high throughput
+		if highThroughput && !fifo {
+			return errors.New("high throughput can only be enabled for fifo queues")
+		}
 
 		// Validate retention period
 		if retention != 0 {
@@ -58,6 +69,7 @@ var queueAddCmd = &cli.Command{
 		queue := Queue{
 			Name:                    queueName,
 			Fifo:                    fifo,
+			HighThroughput:          highThroughput,
 			MessageRetentionSeconds: retention,
 		}
 
