@@ -16,7 +16,13 @@ variable "name" {
 variable "fifo" {
   description = "is this a fifo queue"
   type        = bool
-  default = false
+  default     = false
+}
+
+variable "high_throughput" {
+  description = "Enable high throughput mode for FIFO queues"
+  type        = bool
+  default     = false
 }
 
 variable "message_retention_seconds" {

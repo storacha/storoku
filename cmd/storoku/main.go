@@ -332,6 +332,7 @@ func (c CompiledJS) AsTask() string {
 type Queue struct {
 	Name                    string `json:"name"`
 	Fifo                    bool   `json:"fifo"`
+	HighThroughput          bool   `json:"highThroughput"`
 	MessageRetentionSeconds int    `json:"messageRetentionSeconds,omitempty"`
 }
 
