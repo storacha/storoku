@@ -423,10 +423,11 @@ data "aws_iam_policy_document" "task_sqs_document" {
     effect = "Allow"
   
     actions = [
-      "sqs:SendMessage*",
+      "sqs:SendMessage",
       "sqs:ReceiveMessage",
       "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes"
+      "sqs:GetQueueAttributes",
+      "sqs:ChangeMessageVisibility"
     ]
 
     resources = [for k, queue in var.queues : queue.arn]
