@@ -345,6 +345,7 @@ type Bucket struct {
 type Secret struct {
 	Name     string `json:"name"`
 	Variable bool   `json:"variable"`
+	External bool   `json:"external"`
 }
 
 func (s Secret) Upper() string {
