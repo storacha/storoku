@@ -134,6 +134,12 @@ variable "secrets" {
   default = {}
 }
 
+variable "external_secrets" {
+  description = "list of secrets that are provisioned externally (out-of-band)"
+  type    = set(string)
+  default = []
+}
+
 variable "deployment_env_vars" {
   description = "list of environment variables to upload and use in the container definition (NO SENSITIVE DATA)"
   type = list(object({
