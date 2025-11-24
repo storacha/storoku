@@ -37,7 +37,7 @@ provider "aws" {
   alias = "acm"
 }
 
-{{range .Secrets}}{{if .Variable}}{{else}}
+{{range .Secrets}}{{if or .Variable .External}}{{else}}
 resource "random_password" "{{.Lower}}" {
   length           = 32
   special          = true
@@ -66,9 +66,11 @@ module "app" {
   create_db = {{ .CreateDB }}
   # enter secret values your app will use here -- these will be available
   # as env vars in the container at runtime
-  secrets = { {{range .Secrets }}
-    "{{.Upper}}" = {{if .Variable}}var.{{.Lower}}{{else}}random_password.{{.Lower}}.result{{end}}{{end}}
+  secrets = { {{range .Secrets }}{{if .External}}{{else}}
+    "{{.Upper}}" = {{if .Variable}}var.{{.Lower}}{{else}}random_password.{{.Lower}}.result{{end}}{{end}}{{end}}
   }
+  # enter external secrets (provisioned out-of-band) here
+  external_secrets = [{{range .Secrets}}{{if .External}}"{{.Upper}}",{{end}}{{end}}]
   # enter any sqs queues you want to create here
   queues = [{{range .Queues}}
     {

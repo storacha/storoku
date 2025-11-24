@@ -21,3 +21,9 @@ variable "secrets" {
   type = map(string)
   default = {}
 }
+
+variable "external_secrets" {
+  description = "secrets that are provisioned externally (out-of-band)"
+  type = set(string)
+  default = []
+}

@@ -11,3 +11,8 @@ resource "aws_secretsmanager_secret_version" "ecs_secret_version" {
   secret_id     = aws_secretsmanager_secret.ecs_secret[each.key].id
   secret_string = each.value
 }
+
+data "aws_secretsmanager_secret" "external_secret" {
+  for_each = var.external_secrets
+  name     = "/${var.app}/${var.environment}/Secret/${upper(each.key)}/value"
+}
