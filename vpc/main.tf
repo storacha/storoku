@@ -190,7 +190,7 @@ resource "aws_nat_gateway" "vpc_nat" {
 
 resource "aws_vpc_endpoint" "ecr" {
   vpc_id              = aws_vpc.vpc.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecr.dkr"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [for subnet in aws_subnet.vpc_private_subnet : subnet.id]
   security_group_ids  = [aws_security_group.endpoint_sg.id]
@@ -202,7 +202,7 @@ resource "aws_vpc_endpoint" "ecr" {
 
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = aws_vpc.vpc.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.ecr.api"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [for subnet in aws_subnet.vpc_private_subnet : subnet.id]
   security_group_ids  = [aws_security_group.endpoint_sg.id]
@@ -214,7 +214,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 
 resource "aws_vpc_endpoint" "cloudwatch" {
   vpc_id              = aws_vpc.vpc.id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.logs"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [for subnet in aws_subnet.vpc_private_subnet : subnet.id]
   security_group_ids  = [aws_security_group.endpoint_sg.id]
@@ -226,7 +226,7 @@ resource "aws_vpc_endpoint" "cloudwatch" {
 
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id            = aws_vpc.vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.dynamodb"
+  service_name      = "com.amazonaws.${data.aws_region.current.region}.dynamodb"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [for subnet in aws_subnet.vpc_private_subnet : subnet.id]
   security_group_ids  = [aws_security_group.endpoint_sg.id]
@@ -237,7 +237,7 @@ resource "aws_vpc_endpoint" "dynamodb" {
 
 resource "aws_vpc_endpoint" "sqs" {
   vpc_id            = aws_vpc.vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.sqs"
+  service_name      = "com.amazonaws.${data.aws_region.current.region}.sqs"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [for subnet in aws_subnet.vpc_private_subnet : subnet.id]
   security_group_ids  = [aws_security_group.endpoint_sg.id]
@@ -249,7 +249,7 @@ resource "aws_vpc_endpoint" "sqs" {
 
 resource "aws_vpc_endpoint" "sns" {
   vpc_id            = aws_vpc.vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.sns"
+  service_name      = "com.amazonaws.${data.aws_region.current.region}.sns"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [for subnet in aws_subnet.vpc_private_subnet : subnet.id]
   security_group_ids  = [aws_security_group.endpoint_sg.id]
@@ -261,7 +261,7 @@ resource "aws_vpc_endpoint" "sns" {
 #https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint
 resource "aws_vpc_endpoint" "s3" {
   vpc_id            = aws_vpc.vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
+  service_name      = "com.amazonaws.${data.aws_region.current.region}.s3"
   vpc_endpoint_type = "Gateway"
   tags = {
     "Name" = "${var.environment}-${var.app}-vpc-endpoint-s3"

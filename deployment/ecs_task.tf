@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "app" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = var.aws_cloudwatch_log_group.name
-          awslogs-region        = data.aws_region.current.name
+          awslogs-region        = data.aws_region.current.region
           awslogs-stream-prefix = "ecs"
         }
       }
@@ -144,7 +144,7 @@ resource "aws_iam_role" "ecs_task_role" {
         "Action" : "sts:AssumeRole",
         "Condition" : {
           "ArnLike" : {
-            "aws:SourceArn" : "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
+            "aws:SourceArn" : "arn:aws:ecs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"
           },
           "StringEquals" : {
             "aws:SourceAccount" : "${data.aws_caller_identity.current.account_id}"
@@ -370,7 +370,7 @@ data "aws_iam_policy_document" "task_rds_connect_document" {
     ]
 
     resources = [
-      "arn:aws:rds-db:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:dbuser:${var.database.address == var.database.instance_address ? var.database.id : split(":", data.aws_arn.rds_arn[0].resource)[1]}/${var.db_config.username}"
+      "arn:aws:rds-db:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:dbuser:${var.database.address == var.database.instance_address ? var.database.id : split(":", data.aws_arn.rds_arn[0].resource)[1]}/${var.db_config.username}"
     ]
   }
 }

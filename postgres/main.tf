@@ -206,7 +206,7 @@ data "aws_iam_policy_document" "encryption_rds_policy" {
     condition {
       test     = "StringEquals"
       variable = "kms:ViaService"
-      values   = ["ssm.${data.aws_region.current.name}.amazonaws.com"]
+      values   = ["ssm.${data.aws_region.current.region}.amazonaws.com"]
     }
   }
 }
@@ -329,7 +329,7 @@ data "aws_iam_policy_document" "rds_proxy_policy_document" {
 
     condition {
       test     = "StringEquals"
-      values   = ["secretsmanager.${data.aws_region.current.name}.amazonaws.com"]
+      values   = ["secretsmanager.${data.aws_region.current.region}.amazonaws.com"]
       variable = "kms:ViaService"
     }
   }
