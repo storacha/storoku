@@ -31,12 +31,6 @@ provider "aws" {
   }
 }
 
-# CloudFront is a global service. Certs must be created in us-east-1, where the core ACM infra lives
-provider "aws" {
-  region = "us-east-1"
-  alias = "acm"
-}
-
 {{range .Secrets}}{{if or .Variable .External}}{{else}}
 resource "random_password" "{{.Lower}}" {
   length           = 32
@@ -119,10 +113,6 @@ module "app" {
       object_expiration_days = {{ .ObjectExpirationDays }}{{end}}
     },{{end}}
   ]
-  providers = {
-    aws = aws
-    aws.acm = aws.acm
-  }
   env_files = var.env_files
   domain_base = var.domain_base
 }
