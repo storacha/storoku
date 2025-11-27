@@ -9,7 +9,7 @@ locals {
 
 module "provisoner_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 5.0"
+  version = "~> 8.0"
 
   function_name = "${var.environment}-${var.app}-db-provisioner"
   handler       = "index.lambda_handler"
