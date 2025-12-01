@@ -5,7 +5,7 @@ resource "aws_lb" "alb" {
   name                       = "${var.environment}-${var.app}-alb"
   load_balancer_type         = "application"
   subnets                    = var.vpc.subnet_ids.public
-  idle_timeout               = 60
+  idle_timeout               = 600
   security_groups            = [aws_security_group.lb.id]
   internal                   = false
   enable_deletion_protection = true
