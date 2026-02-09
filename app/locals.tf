@@ -1,5 +1,5 @@
 locals {
-  is_production = var.environment == "prod" || startswith(var.environment, "prod-") || endswith(var.environment, "-prod")
+  is_production = var.environment == "prod" || startswith(var.environment, "prod-") || endswith(var.environment, "-prod") || var.environment == "forge-test"
   is_staging = var.environment == "staging" || startswith(var.environment, "staging-") || endswith(var.environment, "-staging")
 
   # Only prod and staging get their own resources. All other envs will share the dev shared infra
